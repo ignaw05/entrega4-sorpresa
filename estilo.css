@@ -1,0 +1,50 @@
+:root{--tinta:#1a1a1a;--gris:#555;--suave:#f4f5f6;--linea:#dcdfe3;--acento:#0b5d7a;--copa:#8a4b0f;--fondo:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--tinta);font:18px/1.55 "Segoe UI",Helvetica,Arial,sans-serif}
+.etapa{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
+.etapa.tallo{color:var(--acento)} .etapa.copa{color:var(--copa)}
+h1{font-size:40px;line-height:1.15;margin:0 0 18px;max-width:22ch}
+h2{font-size:28px;line-height:1.25;margin:0 0 14px;max-width:44ch}
+p,li{max-width:72ch}
+.lead{font-size:21px;color:var(--gris);max-width:62ch}
+.oracion{font-size:24px;line-height:1.4;border-left:5px solid var(--acento);padding:4px 0 4px 20px;margin:26px 0 34px;max-width:52ch}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:10px 0 18px}
+.num{background:var(--suave);border-radius:8px;padding:18px 20px}
+.num span{display:block;font-size:44px;font-weight:700;line-height:1.1;color:var(--acento)}
+.num p{margin:6px 0 0;font-size:15.5px;color:var(--gris)}
+.grafico{margin:22px 0 10px;overflow-x:auto}
+.nota{font-size:15px;color:var(--gris)}
+details{background:var(--suave);border-radius:8px;padding:0 20px;margin:18px 0}
+details[open]{padding-bottom:12px}
+summary{cursor:pointer;font-weight:600;padding:14px 0;color:var(--acento)}
+details h4{margin:16px 0 6px;font-size:17px}
+details p,details li{font-size:16px}
+.tabla{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;font-size:15px;background:#fff}
+th,td{border:1px solid var(--linea);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:#eef1f4;font-weight:600}
+code{font-size:.9em;background:#eef1f4;padding:1px 5px;border-radius:4px}
+.controles{display:flex;flex-wrap:wrap;gap:8px 22px;margin:18px 0 0;font-size:15px;padding:12px 16px;background:var(--suave);border-radius:8px}
+.vega-bind{display:flex;align-items:center;gap:6px}
+.vega-bind-name{font-weight:600;color:var(--tinta)}
+.vega-bind select{font-size:15px;padding:4px 6px;max-width:330px}
+.vega-bind-radio label{margin-right:10px}
+.probar{display:grid;grid-template-columns:minmax(0,1fr) 450px;gap:24px;align-items:start}
+.deslizadores{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+fieldset{border:1px solid var(--linea);border-radius:8px;padding:6px 12px 8px;margin:0}
+legend{font-weight:600;font-size:14px;color:var(--gris);padding:0 4px}
+.slot .vega-bind{margin:2px 0}
+.slot .vega-bind label{display:grid;grid-template-columns:106px minmax(56px,1fr) 26px;align-items:center;gap:6px;font-size:13.5px;line-height:1.15}
+.slot .vega-bind-name{font-weight:500}
+.slot input[type=range]{width:100%;margin:0;accent-color:var(--copa)}
+.slot .vega-bind output,.slot .vega-bind span:last-child{font-variant-numeric:tabular-nums;text-align:right}
+.ejemplo{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 16px;font-size:15px}
+.ejemplo select,.ejemplo button{font-size:15px;padding:5px 8px}
+.ejemplo button{cursor:pointer;border:1px solid var(--linea);background:#fff;border-radius:6px}
+.fijo{position:sticky;top:16px}
+footer{max-width:960px;margin:0 auto;padding:30px 0;color:var(--gris);font-size:14px}
+.pendiente{border:2px dashed var(--copa);border-radius:8px;padding:6px 20px;margin:18px 0;background:#fdf8f3;color:var(--gris)}
+.pendiente b{color:var(--copa)}
+.gana{color:#2A9D8F;font-weight:600} .pierde{color:#C0392B;font-weight:600}
+tr.total td{background:#f7f8f9}
+details table{font-size:14px}
