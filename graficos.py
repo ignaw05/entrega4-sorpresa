@@ -10,11 +10,15 @@ COLOR = {'Dummy (media)': '#9E9E9E', 'Regresión lineal': '#3D5A80', 'Árbol de 
 
 # Estilo común (tipografía y ejes) para que todos los gráficos se vean igual en la página
 ESTILO = dict(
-    axis=dict(domainColor='#bbbbbb', gridColor='#ececec', labelColor='#555555', labelFontSize=12,
-              tickColor='#bbbbbb', titleColor='#555555', titleFontSize=13, titleFontWeight='normal'),
-    title=dict(fontSize=16, subtitleFontSize=13, subtitleColor='#555555', anchor='start'),
-    legend=dict(labelColor='#1a1a1a', labelFontSize=13, titleColor='#555555', titleFontSize=13),
-    font='Segoe UI, Helvetica, Arial, sans-serif', background='#ffffff', padding=8,
+    axis=dict(domainColor='#d6d1c5', gridColor='#efebe3', labelColor='#5b6170', labelFontSize=12,
+              tickColor='#d6d1c5', titleColor='#5b6170', titleFontSize=12.5, titleFontWeight=500, titlePadding=10,
+              labelFont='Inter, Helvetica, Arial, sans-serif', titleFont='Inter, Helvetica, Arial, sans-serif'),
+    title=dict(font='Fraunces, Georgia, serif', fontSize=19, fontWeight=600, color='#14213d', subtitleFontSize=12.5,
+               subtitleColor='#5b6170', subtitleFont='Inter, Helvetica, Arial, sans-serif', subtitlePadding=6,
+               offset=16, anchor='start'),
+    legend=dict(labelColor='#14213d', labelFontSize=12.5, titleColor='#5b6170', titleFontSize=12.5,
+                symbolType='circle', symbolSize=110),
+    font='Inter, Helvetica, Arial, sans-serif', background='#ffffff', padding=8,
 )
 
 
@@ -22,7 +26,8 @@ def estilo(chart):
     chart = chart.properties(autosize=alt.AutoSizeParams(type='pad', contains='padding'))
     return (chart.configure(font=ESTILO['font'], background=ESTILO['background'], padding=ESTILO['padding'])
                  .configure_axis(**ESTILO['axis']).configure_title(**ESTILO['title'])
-                 .configure_legend(**ESTILO['legend']).configure_view(stroke=None))
+                 .configure_legend(**ESTILO['legend']).configure_view(stroke=None)
+                 .configure_bar(cornerRadiusEnd=3))
 
 
 def fmt(v):   # -2,9 % · 14 % (coma decimal, sin decimales si es grande)

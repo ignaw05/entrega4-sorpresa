@@ -39,30 +39,8 @@ def grafico(chart):
     st.altair_chart(g.estilo(chart), width='content', theme=None)
 
 
-# ---------- Estilo (el mismo de la versión HTML) ----------
+# ---------- Estilo ----------
 st.markdown(f'<style>{(AQUI / "estilo.css").read_text()}</style>', unsafe_allow_html=True)
-st.markdown("""<style>
-.block-container{max-width:1010px;padding-top:2rem}
-section[data-testid="stSidebar"]{background:#fafbfc;width:250px!important}
-section[data-testid="stSidebar"]{width:260px!important}
-.menu .marca{font-size:13px;color:var(--gris);margin:0 0 22px}
-.menu h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:22px 0 6px;padding:0}
-.menu .tallo h3{color:var(--acento)} .menu .copa h3{color:var(--copa)}
-.menu ol{list-style:none;margin:0;padding:0 0 0 4px}
-.menu .tallo ol{border-left:3px solid var(--acento)} .menu .copa ol{border-left:3px solid var(--copa)}
-.menu li{margin:0}
-.menu li a{display:block;padding:5px 0 5px 12px;color:var(--tinta)!important;text-decoration:none!important;font-size:15px}
-.menu .tallo li a:hover{color:var(--acento)!important;font-weight:600} .menu .copa li a:hover{color:var(--copa)!important;font-weight:600}
-.menu .copa-nota{font-size:12.5px;color:var(--gris);margin:8px 0 0;line-height:1.4}
-.stMain section{border:none;padding:0;max-width:none}
-.seccion{border-top:1px solid var(--linea);padding-top:40px;margin-top:40px}
-[data-testid="stExpander"] details{background:var(--suave);border-radius:8px;border:none}
-[data-testid="stExpander"] summary p{font-weight:600;color:var(--acento);font-size:17px}
-[data-testid="stExpander"] h4{margin:16px 0 6px;font-size:17px}
-[data-testid="stExpander"] p{font-size:16px}
-[data-testid="stMetricValue"]{font-size:30px}
-h3.sub{font-size:20px;margin:28px 0 8px}
-</style>""", unsafe_allow_html=True)
 
 with st.sidebar:
     html("""

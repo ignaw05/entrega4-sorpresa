@@ -1,50 +1,116 @@
-:root{--tinta:#1a1a1a;--gris:#555;--suave:#f4f5f6;--linea:#dcdfe3;--acento:#0b5d7a;--copa:#8a4b0f;--fondo:#fff}
-*{box-sizing:border-box}
-body{margin:0;background:var(--fondo);color:var(--tinta);font:18px/1.55 "Segoe UI",Helvetica,Arial,sans-serif}
-.etapa{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
-.etapa.tallo{color:var(--acento)} .etapa.copa{color:var(--copa)}
-h1{font-size:40px;line-height:1.15;margin:0 0 18px;max-width:22ch}
-h2{font-size:28px;line-height:1.25;margin:0 0 14px;max-width:44ch}
-p,li{max-width:72ch}
-.lead{font-size:21px;color:var(--gris);max-width:62ch}
-.oracion{font-size:24px;line-height:1.4;border-left:5px solid var(--acento);padding:4px 0 4px 20px;margin:26px 0 34px;max-width:52ch}
-.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:10px 0 18px}
-.num{background:var(--suave);border-radius:8px;padding:18px 20px}
-.num span{display:block;font-size:44px;font-weight:700;line-height:1.1;color:var(--acento)}
-.num p{margin:6px 0 0;font-size:15.5px;color:var(--gris)}
-.grafico{margin:22px 0 10px;overflow-x:auto}
-.nota{font-size:15px;color:var(--gris)}
-details{background:var(--suave);border-radius:8px;padding:0 20px;margin:18px 0}
-details[open]{padding-bottom:12px}
-summary{cursor:pointer;font-weight:600;padding:14px 0;color:var(--acento)}
-details h4{margin:16px 0 6px;font-size:17px}
-details p,details li{font-size:16px}
-.tabla{overflow-x:auto;margin:8px 0 14px}
-table{border-collapse:collapse;font-size:15px;background:#fff}
-th,td{border:1px solid var(--linea);padding:6px 10px;text-align:left;vertical-align:top}
-th{background:#eef1f4;font-weight:600}
-code{font-size:.9em;background:#eef1f4;padding:1px 5px;border-radius:4px}
-.controles{display:flex;flex-wrap:wrap;gap:8px 22px;margin:18px 0 0;font-size:15px;padding:12px 16px;background:var(--suave);border-radius:8px}
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --papel:#f6f4ef; --tarjeta:#ffffff; --suave:#efece5; --linea:#e2ddd2;
+  --tinta:#14213d; --gris:#5b6170; --tenue:#8a8f9c;
+  --acento:#0f6e74; --acento-suave:#e3f0ef;
+  --copa:#b5651d; --copa-suave:#f8ece0;
+  --noche:#101a30;
+  --sombra:0 1px 2px rgba(20,33,61,.05),0 6px 20px rgba(20,33,61,.06);
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --sans:'Inter',-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+
+/* ---------- Base ---------- */
+html,body,.stApp,.stMain{background:var(--papel)!important}
+.stApp,.stApp p,.stApp li,.stApp label,.stApp input,.stApp button,.stApp textarea{font-family:var(--sans)}
+[data-testid="stMainBlockContainer"],.block-container{max-width:1040px;padding-top:3rem;padding-bottom:4rem}
+[data-testid="stHeader"]{background:transparent}
+[data-testid="stMarkdownContainer"] p,[data-testid="stMarkdownContainer"] li{font-size:17.5px;line-height:1.65;color:var(--tinta);max-width:72ch}
+
+/* ---------- Títulos ---------- */
+[data-testid="stMarkdownContainer"] h1,[data-testid="stMarkdownContainer"] h2,
+[data-testid="stMarkdownContainer"] h3,[data-testid="stMarkdownContainer"] h4{font-family:var(--serif)!important;color:var(--tinta);letter-spacing:-.01em}
+[data-testid="stMarkdownContainer"] h1{font-size:46px!important;line-height:1.1!important;font-weight:600!important;margin:0 0 22px!important;padding:0!important;max-width:22ch}
+[data-testid="stMarkdownContainer"] h2{font-size:31px!important;line-height:1.2!important;font-weight:600!important;margin:0 0 16px!important;padding:0!important;max-width:40ch}
+[data-testid="stMarkdownContainer"] h3.sub{font-size:22px!important;font-weight:600!important;margin:36px 0 8px!important;padding:0!important}
+[data-testid="stMarkdownContainer"] h4{font-size:18px!important;font-weight:600!important;margin:22px 0 6px!important;padding:0!important}
+/* sin el ícono de enlace que Streamlit agrega a los títulos */
+[data-testid="stHeaderActionElements"],[data-testid="stMarkdownContainer"] h1 a,[data-testid="stMarkdownContainer"] h2 a{display:none!important}
+
+/* ---------- Etiqueta de etapa ---------- */
+.etapa{display:inline-flex;align-items:center;gap:8px;font-size:12px!important;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  margin:0 0 14px!important;padding:5px 12px;border-radius:999px}
+.etapa::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.etapa.tallo{color:var(--acento)!important;background:var(--acento-suave)}
+.etapa.copa{color:var(--copa)!important;background:var(--copa-suave)}
+
+/* ---------- Portada ---------- */
+[data-testid="stMarkdownContainer"] p.lead{font-size:20px;line-height:1.6;color:var(--gris);max-width:62ch}
+[data-testid="stMarkdownContainer"] p.oracion{font-family:var(--serif);font-size:24px;line-height:1.45;font-weight:500;color:var(--tinta);
+  background:var(--tarjeta);border-left:4px solid var(--acento);border-radius:0 12px 12px 0;box-shadow:var(--sombra);
+  padding:22px 28px;margin:32px 0 28px;max-width:none}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:8px 0 20px}
+.num{background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;padding:22px 22px 20px;box-shadow:var(--sombra);position:relative;overflow:hidden}
+.num::after{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,var(--acento),#3d9ca1)}
+.num span{display:block;font-family:var(--serif);font-size:44px;font-weight:600;line-height:1.05;color:var(--acento);font-variant-numeric:tabular-nums}
+[data-testid="stMarkdownContainer"] .num p{margin:10px 0 0;font-size:14.5px;line-height:1.5;color:var(--gris)}
+[data-testid="stMarkdownContainer"] p.nota{font-size:14.5px;color:var(--tenue)}
+
+/* ---------- Secciones ---------- */
+.seccion{border-top:1px solid var(--linea);padding-top:56px;margin-top:56px}
+
+/* ---------- Gráficos y tablas en tarjeta ---------- */
+[data-testid="stVegaLiteChart"],.stVegaLiteChart{background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;
+  box-shadow:var(--sombra);padding:18px 18px 10px;margin:14px 0 6px;max-width:100%;overflow-x:auto}
+.vega-bindings,form.vega-bindings{display:flex;flex-wrap:wrap;gap:8px 22px;margin:12px 4px 4px;padding:10px 14px;background:var(--suave);border-radius:10px;font:14px var(--sans)}
 .vega-bind{display:flex;align-items:center;gap:6px}
 .vega-bind-name{font-weight:600;color:var(--tinta)}
-.vega-bind select{font-size:15px;padding:4px 6px;max-width:330px}
+.vega-bind select{font:14px var(--sans);padding:4px 8px;border:1px solid var(--linea);border-radius:6px;background:#fff}
 .vega-bind-radio label{margin-right:10px}
-.probar{display:grid;grid-template-columns:minmax(0,1fr) 450px;gap:24px;align-items:start}
-.deslizadores{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-fieldset{border:1px solid var(--linea);border-radius:8px;padding:6px 12px 8px;margin:0}
-legend{font-weight:600;font-size:14px;color:var(--gris);padding:0 4px}
-.slot .vega-bind{margin:2px 0}
-.slot .vega-bind label{display:grid;grid-template-columns:106px minmax(56px,1fr) 26px;align-items:center;gap:6px;font-size:13.5px;line-height:1.15}
-.slot .vega-bind-name{font-weight:500}
-.slot input[type=range]{width:100%;margin:0;accent-color:var(--copa)}
-.slot .vega-bind output,.slot .vega-bind span:last-child{font-variant-numeric:tabular-nums;text-align:right}
-.ejemplo{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 16px;font-size:15px}
-.ejemplo select,.ejemplo button{font-size:15px;padding:5px 8px}
-.ejemplo button{cursor:pointer;border:1px solid var(--linea);background:#fff;border-radius:6px}
-.fijo{position:sticky;top:16px}
-footer{max-width:960px;margin:0 auto;padding:30px 0;color:var(--gris);font-size:14px}
-.pendiente{border:2px dashed var(--copa);border-radius:8px;padding:6px 20px;margin:18px 0;background:#fdf8f3;color:var(--gris)}
-.pendiente b{color:var(--copa)}
-.gana{color:#2A9D8F;font-weight:600} .pierde{color:#C0392B;font-weight:600}
-tr.total td{background:#f7f8f9}
-details table{font-size:14px}
+.vega-bind input[type=radio]{accent-color:var(--copa)}
+#vg-tooltip-element{font-family:var(--sans)!important;border-radius:8px!important;border:1px solid var(--linea)!important;box-shadow:var(--sombra)!important}
+
+.tabla{overflow-x:auto;margin:10px 0 16px;border-radius:10px;border:1px solid var(--linea)}
+.tabla table{border-collapse:collapse;font-size:14px;background:#fff;width:100%;border:none}
+.tabla th,.tabla td{border:none;border-bottom:1px solid var(--linea);padding:9px 12px;text-align:left;vertical-align:top;color:var(--tinta)}
+.tabla th{background:var(--suave);font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gris)}
+.tabla tbody tr:last-child td{border-bottom:none}
+.tabla tbody tr:hover td{background:#faf8f4}
+.tabla tr.total td{background:var(--acento-suave);font-weight:600}
+code{font-family:var(--mono)!important;font-size:.85em!important;background:var(--suave)!important;color:var(--acento)!important;padding:1px 6px!important;border-radius:5px}
+.gana{color:#1f8a7c;font-weight:600} .pierde{color:#c0392b;font-weight:600}
+
+/* ---------- «Cómo lo sabemos» ---------- */
+[data-testid="stExpander"] details{background:var(--tarjeta);border:1px solid var(--linea)!important;border-radius:12px!important;box-shadow:var(--sombra)}
+[data-testid="stExpander"] summary{padding:14px 18px}
+[data-testid="stExpander"] summary:hover p,[data-testid="stExpander"] summary:hover svg{color:var(--copa)!important}
+[data-testid="stExpander"] summary p{font-weight:600;color:var(--acento);font-size:16px!important}
+[data-testid="stExpander"] [data-testid="stMarkdownContainer"] p{font-size:15.5px}
+
+/* ---------- Métricas ---------- */
+[data-testid="stMetric"]{background:var(--tarjeta);border:1px solid var(--linea);border-radius:12px;padding:14px 18px;box-shadow:var(--sombra)}
+[data-testid="stMetricLabel"] p{font-size:13px!important;color:var(--gris)!important;font-weight:500}
+[data-testid="stMetricValue"]{font-family:var(--serif);font-size:32px;font-weight:600;color:var(--tinta);font-variant-numeric:tabular-nums}
+
+/* ---------- Controles ---------- */
+[data-testid="stDataFrame"]{border:1px solid var(--linea);border-radius:12px;overflow:hidden;box-shadow:var(--sombra)}
+[data-testid="stWidgetLabel"] p{font-weight:500;color:var(--gris)!important;font-size:14px!important}
+[data-baseweb="tag"]{background:var(--copa-suave)!important}
+[data-baseweb="tag"] span{color:var(--copa)!important}
+[data-testid="stAlert"]{border-radius:10px}
+
+/* ---------- Menú lateral ---------- */
+section[data-testid="stSidebar"]{width:270px!important;background:var(--noche)!important;border-right:none}
+section[data-testid="stSidebar"] > div{background:var(--noche)}
+.menu .marca{font-size:12.5px!important;line-height:1.5!important;color:#9aa3b8!important;margin:0 0 30px!important;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.menu h3{font-family:var(--sans)!important;font-size:11px!important;font-weight:600!important;letter-spacing:.14em;text-transform:uppercase;margin:26px 0 10px!important;padding:0!important}
+.menu .tallo h3{color:#6cc3c8!important} .menu .copa h3{color:#e8a364!important}
+.menu ol{list-style:none;margin:0!important;padding:0!important}
+.menu li{margin:2px 0!important;padding:0!important}
+.menu li a{display:block;padding:7px 12px;border-radius:8px;color:#dfe4ee!important;text-decoration:none!important;font-size:15px;transition:background .15s,color .15s}
+.menu .tallo li a:hover{background:rgba(108,195,200,.12);color:#fff!important}
+.menu .copa li a:hover{background:rgba(232,163,100,.12);color:#fff!important}
+.menu .copa-nota{font-size:12.5px!important;color:#9aa3b8!important;margin:14px 0 0!important;line-height:1.5!important}
+section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] svg,
+[data-testid="stSidebarHeader"] svg{color:#9aa3b8}
+
+/* ---------- Pie ---------- */
+footer{margin:64px 0 0;padding:24px 0 0;border-top:1px solid var(--linea);color:var(--tenue);font-size:13.5px}
+
+@media (max-width:800px){
+  .nums{grid-template-columns:1fr}
+  [data-testid="stMarkdownContainer"] h1{font-size:34px!important}
+  [data-testid="stMarkdownContainer"] h2{font-size:25px!important}
+}
