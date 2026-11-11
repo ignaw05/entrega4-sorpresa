@@ -11,6 +11,7 @@ import streamlit as st
 
 import graficos as g
 import contenido as c
+import modelo as m
 
 AQUI = Path(__file__).parent
 ARCHIVO = AQUI / 'silver_stocks_2.csv'
@@ -61,36 +62,128 @@ with st.sidebar:
 
 df_stocks = cargar_datos()
 
+import joblib
+
+ARCH_MODELO, ARCH_PRED = AQUI / 'modelo_final.joblib', AQUI / 'predicciones.csv'
+
+
+def completar_metricas(artefacto, predicciones, datos):
+    """Completa métricas del piso y valida que el test guardado corresponda al Silver actual."""
+    predicciones['reported_date'] = pd.to_datetime(predicciones['reported_date'], errors='coerce')
+    _, train, val, test = m.preparar(datos)
+    test_guardado = predicciones[predicciones['conjunto'] == 'Test'].copy()
+    columnas = ['ticker', 'reported_date', m.OBJETIVO]
+    actual = test[columnas].sort_values(columnas[:2]).reset_index(drop=True)
+    guardado = test_guardado[columnas + ['prediccion']].sort_values(columnas[:2]).reset_index(drop=True)
+    if len(actual) != len(guardado) or not actual[columnas[:2]].equals(guardado[columnas[:2]]):
+        return False
+    if not np.allclose(actual[m.OBJETIVO], guardado[m.OBJETIVO], equal_nan=False):
+        return False
+
+    metricas = dict(artefacto.get('metricas', {}))
+    mae_modelo_test = float(np.mean(np.abs(actual[m.OBJETIVO].to_numpy() - guardado['prediccion'].to_numpy())))
+    train_val = pd.concat([train, val])
+    mae_piso_test = float(np.mean(np.abs(test[m.OBJETIVO].to_numpy() - train_val[m.OBJETIVO].mean())))
+    anios_cv = sorted(train['anio'].unique())[-5:]
+    errores_piso = []
+    for anio in anios_cv:
+        anterior = train[train['anio'] < anio]
+        siguiente = train[train['anio'] == anio]
+        errores_piso.append(float(np.mean(np.abs(
+            siguiente[m.OBJETIVO].to_numpy() - anterior[m.OBJETIVO].mean()))))
+    metricas.update({
+        'objetivo': m.VERSION_OBJETIVO,
+        'mae_test': mae_modelo_test,
+        'mae_piso_test': mae_piso_test,
+        'mae_piso_cv': float(np.mean(errores_piso)),
+        'mae_piso_cv_desvio': float(np.std(errores_piso, ddof=1)),
+        'mejora_mae_test_pct': float((mae_piso_test - mae_modelo_test) / mae_piso_test * 100),
+    })
+    artefacto['metricas'] = metricas
+    artefacto['objetivo'] = m.VERSION_OBJETIVO
+    return True
+
+
+@st.cache_resource(show_spinner='Preparando el modelo de reacción a tres ruedas…')
+def cargar_modelo(_datos, version_datos):
+    """Carga el artefacto de la reacción a tres ruedas o lo entrena si el archivo no corresponde."""
+    art = pred = None
+    if ARCH_MODELO.is_file() and ARCH_PRED.is_file():
+        try:
+            guardado = joblib.load(ARCH_MODELO)
+            pred_guardado = pd.read_csv(ARCH_PRED)
+            mismo_objetivo = (guardado.get('objetivo') in (None, m.VERSION_OBJETIVO)
+                              and m.OBJETIVO in pred_guardado.columns)
+            if mismo_objetivo and completar_metricas(guardado, pred_guardado, _datos):
+                art, pred = guardado, pred_guardado
+                joblib.dump(art, ARCH_MODELO, compress=3)
+        except Exception:
+            art = pred = None
+    if art is None or pred is None:
+        with st.spinner('Entrenando con el objetivo corregido. La primera carga puede tardar unos minutos…'):
+            resultado = m.entrenar(_datos)
+        art = {k: resultado[k] for k in ['pipe', 'calibrador', 'umbral', 'metricas', 'referencia']}
+        art['objetivo'] = m.VERSION_OBJETIVO
+        pred = resultado['predicciones']
+        try:
+            joblib.dump(art, ARCH_MODELO, compress=3)
+            columnas = list(dict.fromkeys([
+                'ticker', 'reported_date', 'trimestre', 'conjunto', *m.COLUMNAS_CRUDAS, 'open_adj_lead',
+                'close_adj_lead3', m.OBJETIVO, 'retorno_operable', 'retorno_esperado', 'confianza', 'compraria'
+            ]))
+            pred[columnas].to_csv(ARCH_PRED, index=False)
+        except OSError:
+            pass
+    pred['reported_date'] = pd.to_datetime(pred['reported_date'], errors='coerce')
+    return art, pred
+
+
+version_datos = (ARCHIVO.stat().st_mtime_ns, ARCHIVO.stat().st_size)
+ART, PRED = cargar_modelo(df_stocks, version_datos)
+UMBRAL = ART['umbral']
+U_TXT = f'{UMBRAL:g} %'.replace('.', ',')
+
+
+def num(v, dec=2):
+    return f'{v:,.{dec}f}'.replace(',', 'X').replace('.', ',').replace('X', '.').replace('-', '−')
+
+
+TEST_PRED = PRED[PRED['conjunto'] == 'Test'].copy()
+TEST_MONTOS = m.simular_presupuesto(
+    m.peso_modelo(TEST_PRED['retorno_esperado'], TEST_PRED['confianza'], UMBRAL),
+    TEST_PRED['open_adj_lead'], 1000)
+TEST_RESUMEN = m.resultado(TEST_MONTOS, TEST_PRED['retorno_operable'], 1000)
+TEST_GANADORAS = int((TEST_PRED.loc[TEST_MONTOS > 0, 'retorno_operable'] > 0).sum())
+TEST_COMPRAS = int((TEST_MONTOS > 0).sum())
+
 # ---------- Portada ----------
-html("""
+html(f"""
 <div id="portada"></div>
 <p class="etapa tallo">El proyecto</p>
-<h1>¿En qué medida la sorpresa de resultados explica cuánto se mueve una acción en los tres días posteriores al anuncio?</h1>
+<h1>¿Los datos publicados con el balance anticipan la reacción de la acción en las tres ruedas siguientes?</h1>
 <p class="lead">Cada trimestre una empresa presenta su balance, y su dato más esperado es la ganancia por acción (EPS).
 Días antes, los analistas publican cuánto esperan. Si la diferencia entre lo esperado y lo real —la sorpresa— dice algo
 sobre la empresa, el precio de la acción tendría que reaccionar a ella.</p>
-<p class="oracion">Una sorpresa negativa eleva 24 puntos el riesgo de una caída fuerte, y con esa señal un Random Forest
-elige compras que ganan 6,6 % del presupuesto en validación, aunque predice el retorno apenas mejor que la media.</p>
+<p class="oracion">El modelo estima el retorno hasta el cierre de la tercera rueda usando la información del balance y datos previos, sin usar la apertura siguiente como predictor; después compara el precio estimado con esa apertura para evaluar una compra.</p>
 <div class="nums">
 <div class="num"><span>+24,4 pp</span><p>más probabilidad de caída fuerte con sorpresa negativa que con positiva, a igual magnitud</p></div>
-<div class="num"><span>6,6 %</span><p>de retorno sobre el presupuesto en validación, contra 0,3 % de comprar todo</p></div>
-<div class="num"><span>−4 %</span><p>de error (MAE 5,15 contra 5,38 pp del piso): menos que el desvío entre folds</p></div>
+<div class="num"><span>{num(ART['metricas']['mae_test'])} pp</span><p>MAE del modelo en el test: retorno del cierre previo al cierre de la tercera rueda</p></div>
+<div class="num"><span>{num(ART['metricas']['mae_piso_test'])} pp</span><p>MAE de la referencia que predice la media, sobre el mismo test</p></div>
 </div>
-<p class="nota">Medido sobre 11.235 balances trimestrales de 585 empresas, del 25/01/2008 al 30/09/2026
-(captura del pipeline del 26/10/2026).</p>
+<p class="nota">Test temporal 2026Q3: {num(len(TEST_PRED), 0)} balances; con 1.000 USD simulados, {TEST_COMPRAS} compras ({TEST_GANADORAS} ganadoras), resultado {num(TEST_RESUMEN['ganancia (USD)'])} USD antes de costos. Captura del pipeline: 26/10/2026.</p>
 """)
 
 # ---------- Los datos ----------
 html("""
 <div id="datos" class="seccion"></div>
 <p class="etapa tallo">Los datos</p>
-<h2>Las empresas presentan su balance trimestral, el mercado predice su ganancia días antes, y una gran sorpresa mueve más el precio de la acción</h2>
+<h2>La sorpresa separa grupos de reacción, aunque el movimiento a tres ruedas sigue siendo disperso</h2>
 <p>Cada empresa presenta datos fundamentales —márgenes, flujo de caja, deuda— y su dato más importante, la ganancia
 por acción (EPS). Los analistas predicen el EPS, y la diferencia entre lo predicho y lo real es la sorpresa. Con la
 sorpresa y los fundamentales se quiere anticipar cuánto sube o baja la acción en los tres días siguientes.</p>
-<p>Cada columna es un grupo de balances con sorpresas parecidas, ordenados de la más negativa a la más positiva.
-Mirá la marca naranja: el retorno típico pasa de negativo a positivo a medida que la sorpresa mejora, y en los
-extremos la caja se estira.</p>
+<p>Cada columna reúne balances con sorpresas similares, de menor a mayor. El retorno se mide desde el último cierre previo
+hasta el cierre de la tercera rueda. La marca naranja indica la mediana;
+la caja y la línea muestran la dispersión. Compará cuánto se superponen los grupos antes de concluir que la sorpresa anticipa el movimiento.</p>
 """)
 grafico(g.grafico_datos(df_stocks))
 with st.expander('Cómo lo sabemos'):
@@ -111,28 +204,30 @@ with st.expander('Cómo lo sabemos'):
     {c.T_PARTICION}
     <h4>Columnas descartadas por fuga</h4>
     <p><code>ma30</code> sigue en el dataset pero no entra al modelo, porque el promedio de 30 días incluye la rueda de
-    reacción al anuncio. Los precios posteriores al anuncio (<code>open_adj_lead</code>, <code>close_adj_lead3</code> y
-    <code>close_adj_lead7</code>) tampoco son entradas: se usan solo para definir el retorno y para medir cuánto se gana
-    o se pierde.</p>
+    reacción al anuncio. Los precios posteriores (<code>open_adj_lead</code>, <code>close_adj_lead3</code> y
+    <code>close_adj_lead7</code>) no son predictores: <code>close_adj_lead3</code> define el resultado estimado, mientras
+    que la apertura se usa después para decidir si el precio estimado deja margen de compra. Los fundamentales se vinculan por trimestre fiscal, pero el dataset no conserva la fecha histórica de
+    disponibilidad por campo; hay que verificar su publicación antes de tratarlos como conocidos al anunciarse.</p>
     """)
 
 # ---------- Lo que encontramos ----------
 html("""
 <div id="hallazgos" class="seccion"></div>
 <p class="etapa tallo">Lo que encontramos</p>
-<h2>Una sorpresa negativa casi siempre viene acompañada de un retorno malo, y el efecto crece a medida que la sorpresa es más negativa</h2>
-<p>La magnitud de la sorpresa por sí sola no tiene una relación fuerte con el retorno; el signo, sí. Dentro de cada
-grupo de magnitud, la barra naranja (sorpresa negativa) es siempre mucho más alta que la azul (positiva).</p>
+<h2>A igual magnitud, las sorpresas negativas se asocian con más caídas en la primera apertura</h2>
+<p>Este hallazgo describe el salto entre el cierre previo y la apertura negociable; no es el objetivo apertura→tercera
+rueda del modelo. Dentro de cada grupo de magnitud, compará la frecuencia de caídas para cada signo de sorpresa.</p>
 """)
 grafico(g.grafico_hallazgo(df_stocks))
 with st.expander('Cómo lo sabemos'):
     html("""
-    <h4>Una hipótesis que se sostuvo: a igual magnitud de sorpresa, las negativas elevan el riesgo de caída fuerte</h4>
-    <p>Entre anuncios con una sorpresa de magnitud parecida, los que quedaron por debajo del consenso tuvieron
+    <h4>Una hipótesis que se sostuvo en el EDA: a igual magnitud, las negativas se asocian con más caídas al abrir</h4>
+    <p>En el análisis de la Entrega 2, entre anuncios con una sorpresa de magnitud parecida, los que quedaron por debajo del consenso tuvieron
     <b>24,4 puntos porcentuales más</b> de probabilidad de una caída fuerte que los que quedaron por encima
     (IC 95 % por empresa: 21,4 a 26,9 pp). Está en verde (≥ 15 pp) y se repite en los cuatro grupos de magnitud: en el de
     mayor sorpresa, cae fuerte el 50,0 % de las negativas y el 12,7 % de las positivas. Una caída fuerte es un retorno de
-    −1,98 % o menos entre el cierre previo y la apertura posterior al anuncio (el primer cuartil de ese retorno).</p>
+    −1,98 % o menos entre el cierre previo y la primera apertura negociable (el primer cuartil de ese retorno). Esta
+    diferencia es una asociación descriptiva, no una prueba causal.</p>
     <h4>Una que no: los anuncios pre-market no reaccionan distinto que los post-market</h4>
     <p>El movimiento a 3 días es parecido: 4,98 % en promedio, sin importar el signo, para los 6.589 anuncios pre-market,
     contra 5,39 % para los 4.600 post-market. La diferencia de 0,4 pp da un d de Cohen de 0,08 (IC 95 % por empresa:
@@ -147,86 +242,56 @@ with st.expander('Cómo lo sabemos'):
     """)
 
 # ---------- El modelo ----------
-html("""
+html(f"""
 <div id="modelo" class="seccion"></div>
 <p class="etapa tallo">El modelo</p>
-<h2>Random Forest es el modelo que más dinero gana: con un presupuesto acotado, es el que obtiene más ganancia</h2>
-<p>Con un umbral de 18,5 %, el modelo compra una acción solo si espera que suba 18,5 % o más. Con un presupuesto
-limitado, decide en qué acciones invertir según la confianza que tiene en cada subida. La barra con borde negro es el
-elegido; las dos de la derecha son las referencias sin modelo.</p>
+<h2>El modelo anticipa el cierre de la tercera rueda sin conocer la apertura siguiente</h2>
+<p>La salida del Random Forest es el retorno desde el último cierre previo al anuncio hasta el cierre de la tercera rueda.
+La apertura siguiente no entra al modelo: luego se usa para traducir ese cierre estimado a un retorno potencial de compra.
+El umbral de {U_TXT} se ajusta en validación y la decisión se evalúa aparte en el trimestre de test.</p>
 """)
-grafico(g.grafico_modelos())
-html("""
+grafico(g.grafico_mae(ART['metricas']))
+html(f"""
 <h3 class="sub">La métrica, el piso y la validación</h3>
-<p>El modelo predice el retorno a 3 días y se mide con el MAE, en puntos porcentuales del retorno. El piso es un
-modelo que predice siempre el retorno medio. Los modelos se comparan con validación cruzada temporal sobre el
-entrenamiento: cada pedazo entrena con los años anteriores y valida en el siguiente. Todos le ganan al piso, pero por
-menos que el desvío entre pedazos.</p>
+<p>El objetivo es el retorno porcentual entre el cierre previo al anuncio (<code>close_adj_lag1</code>) y el cierre de la
+tercera rueda (<code>close_adj_lead3</code>). Se mide el error absoluto medio en puntos porcentuales.
+El piso predice siempre la media del entrenamiento. La validación cruzada respeta el orden temporal y el test 2026Q3
+queda separado de la selección.</p>
 """)
-grafico(g.grafico_mae())
 with st.expander('Cómo lo sabemos'):
     html(f"""
     <h4>La comparación completa</h4>
-    {c.T_MAE}
-    <h4>Cómo se eligió: la ganancia en validación</h4>
-    <p>En validación, cada modelo se probó con 28 presupuestos (de 100 a 10.000 USD) y umbrales de 0 a 44,5 %, y se eligió
-    un único umbral para todos los presupuestos: el que da mayor retorno promedio sobre el presupuesto, siempre que deje
-    comprar al menos 3 acciones. El modelo final es el de mayor retorno promedio con su umbral.</p>
-    {c.T_RETORNO}
+    {c.tabla_metricas(ART['metricas'])}
+    <p>Mejora del MAE en test frente al piso: {num(ART['metricas']['mejora_mae_test_pct'])} %. Si la mejora es pequeña
+    frente a la variación entre años, no hay evidencia suficiente para presentar el modelo como un predictor fuerte.</p>
+    <h4>Cómo se fijó el umbral</h4>
+    <p>El umbral de {U_TXT} se elige usando la validación temporal, no el test. La búsqueda maximiza el retorno medio
+    simulado sobre los presupuestos y exige un mínimo de compras. Como se selecciona dentro de la validación, ese retorno
+    es una decisión de ajuste, no una estimación independiente de rendimiento.</p>
     <h4>Cómo decide cuáles comprar</h4>
     <p>Se compra una acción solo si su retorno esperado desde la apertura supera el umbral. El presupuesto se gasta una sola
     vez y se reparte entre las acciones que lo superan, según la confianza calibrada del modelo (la probabilidad de que la
     acción suba): cada una recibe una parte proporcional a cuánto pasa esa probabilidad del 50 %, y si no pasa del 50 % no
     se compra. Se compran acciones enteras al precio de apertura, lo que sobra del redondeo se usa para sumar acciones de
     las de mayor confianza, se vende al cierre del 3er día hábil, y el resultado es la ganancia sobre el presupuesto.</p>
-    <h4>En el test: qué compra con 1.000 USD</h4>
-    <p>En 2026Q3, con 1.000 USD, el modelo hace 4 compras: gana una y pierde tres, y termina con +38,55 USD (+3,9 % sobre el
-    presupuesto). Las cuatro esperaban subir alrededor de 20 % con una confianza de 55 %: el retorno esperado está muy por
-    encima de lo que pasa, y el resultado depende de una sola compra que salió bien.</p>
-    {c.T_COMPRAS}
-    <h4>En qué se apoya</h4>
-    <p>Entre paréntesis, cuánto cambia el retorno esperado (en puntos porcentuales) si la columna pasa de un valor bajo
-    (percentil 25) a uno alto (percentil 75), con todo lo demás igual. En casi todos los sectores lo que más empuja a comprar
-    es la sorpresa, en línea con el hallazgo de la sección anterior.</p>
-    {c.T_SOPORTE}
+    <p>Primero se reconstruye el cierre estimado: <code>close_adj_lag1 × (1 + retorno_predicho / 100)</code>. Después se
+    compara con la apertura negociable: <code>(cierre_estimado / open_adj_lead − 1) × 100</code>. Esta segunda cuenta se
+    hace fuera del modelo; la apertura no altera la predicción.</p>
+    <h4>Simulación del test, con 1.000 USD</h4>
+    <p>En 2026Q3 el modelo habría realizado {TEST_COMPRAS} compras, {TEST_GANADORAS} con retorno positivo, con un resultado
+    de {num(TEST_RESUMEN['ganancia (USD)'])} USD ({num(TEST_RESUMEN['retorno s/ presupuesto (%)'])} % del presupuesto),
+    antes de comisiones, impuestos y deslizamiento. El trimestre contiene {num(len(TEST_PRED), 0)} balances; por eso la
+    simulación es un resultado de una ventana temporal acotada, no una garantía de rendimiento futuro.</p>
     """)
 
 # ---------- Tu turno ----------
-import modelo as m
-
-ARCH_MODELO, ARCH_PRED = AQUI / 'modelo_final.joblib', AQUI / 'predicciones.csv'
-
-
-@st.cache_resource(show_spinner='Cargando el modelo…')
-def cargar_modelo():
-    """El modelo que deja entrenar.py. Si no está (o no se puede leer), se entrena acá con la misma semilla."""
-    try:
-        import joblib
-        art = joblib.load(ARCH_MODELO)
-        pred = pd.read_csv(ARCH_PRED)
-    except Exception:
-        with st.spinner('Entrenando el modelo de la Entrega 3 (una sola vez, tarda un par de minutos)…'):
-            r = m.entrenar(df_stocks)
-        art, pred = {k: r[k] for k in ['pipe', 'calibrador', 'umbral', 'metricas', 'referencia']}, r['predicciones']
-    pred['reported_date'] = pd.to_datetime(pred['reported_date'])
-    return art, pred
-
-
 @st.cache_resource(show_spinner=False)
 def chart_explora(_pred, umbral):
     return g.estilo(g.grafico_explora(_pred, umbral))
 
-
-ART, PRED = cargar_modelo()
-UMBRAL = ART['umbral']
-U_TXT = f'{UMBRAL:g} %'.replace('.', ',')
-
 def delta(v):   # con el guion común, para que Streamlit pinte la flecha según el signo
     return f'{v:+.2f} % del presupuesto'.replace('.', ',')
 
-
-def num(v, dec=2):
-    return f'{v:,.{dec}f}'.replace(',', 'X').replace('.', ',').replace('X', '.').replace('-', '−')
 
 # ---------- Explorá ----------
 html("""
@@ -249,9 +314,9 @@ html(f"""
 <div id="proba" class="seccion"></div>
 <p class="etapa copa">Tu turno · Probá el modelo</p>
 <h2>Armá un balance y mirá cuánto esperaría subir la acción</h2>
-<p>Cargá los datos de un balance, o partí de uno real y cambiale lo que quieras: el Random Forest final de la Entrega 3
-predice cómo va a reaccionar el mercado, es decir, cuánto se mueve la acción desde el cierre previo al anuncio hasta el
-cierre del 3er día hábil.</p>
+<p>Cargá los datos publicados con un balance, o partí de uno real y cambiale lo que quieras. El modelo estima la reacción
+hasta el cierre de la tercera rueda sin usar la apertura siguiente como predictor. La apertura se usa después para calcular
+el retorno potencial de una compra.</p>
 """)
 
 REF = ART['referencia']
@@ -285,6 +350,7 @@ def a_widgets(fila):
         ss['p_report_time'] = 'desconocido'
     ss['p_reported_eps'], ss['p_consensus_eps'] = float(fila['reported_eps']), float(fila['consensus_eps'])
     ss['p_close_adj_lag1'] = float(fila['close_adj_lag1'])
+    ss['p_open_adj_lead'] = float(fila['open_adj_lead']) if pd.notna(fila['open_adj_lead']) else 1.0
     for c in MILLONES:
         ss[f'p_{c}'] = float(fila[c] / 1e6) if pd.notna(fila[c]) else float(REF['mediana'][c] / 1e6)
     for c in PORCENTAJES:
@@ -324,9 +390,11 @@ def probar():
             a, b = st.columns(2)
             a.number_input('EPS reportado (USD)', key='p_reported_eps', step=0.01, format='%.2f')
             b.number_input('EPS esperado por los analistas (USD)', key='p_consensus_eps', step=0.01, format='%.2f')
-            a.number_input('Precio de cierre previo (USD)', key='p_close_adj_lag1', min_value=0.01, step=1.0, format='%.2f',
-                           help='El último cierre antes del anuncio: la reacción se mide desde acá.')
-            b.metric('Sorpresa', f'{num(sorpresa_pct(), 1)} %' if np.isfinite(sorpresa_pct()) else '—')
+            a.number_input('Cierre previo al anuncio (USD)', key='p_close_adj_lag1', min_value=0.01, step=1.0, format='%.2f',
+                           help='Dato previo al anuncio; se usa para construir variables de contexto.')
+            b.number_input('Primera apertura negociable (USD)', key='p_open_adj_lead', min_value=0.01, step=1.0, format='%.2f',
+                           help='Precio de entrada. No se usa como predictor: sirve para traducir el retorno estimado a un precio estimado.')
+            st.metric('Sorpresa porcentual', f'{num(sorpresa_pct(), 1)} %' if np.isfinite(sorpresa_pct()) else '—')
         with st.expander('Resultados y balance (millones de USD)'):
             a, b = st.columns(2)
             for i, c in enumerate(MILLONES):
@@ -341,18 +409,26 @@ def probar():
     caso['surprise'] = ss['p_reported_eps'] - ss['p_consensus_eps']
     caso['surprise_pct'] = caso['surprise'] / abs(ss['p_consensus_eps']) * 100 if ss['p_consensus_eps'] != 0 else np.nan
     caso['close_adj_lag1'] = ss['p_close_adj_lag1']
+    precio_entrada = float(ss['p_open_adj_lead'])
     caso.update({c: ss[f'p_{c}'] * 1e6 for c in MILLONES})
     caso.update({c: ss[f'p_{c}'] / 100 for c in PORCENTAJES})
     X = pd.DataFrame([caso])[m.COLUMNAS_CRUDAS]
     pred = float(ART['pipe'].predict(X)[0])
+    precio_estimado_3r = float(caso['close_adj_lag1'] * (1 + pred / 100))
+    retorno_desde_apertura = float(m.esperado_desde_apertura(pd.DataFrame([caso | {
+        'open_adj_lead': precio_entrada}], index=[0]), [pred])[0])
+    probabilidad_subida = float(m.prob_subida(ART['calibrador'], [retorno_desde_apertura])[0])
+    decision_compra = retorno_desde_apertura > UMBRAL and probabilidad_subida > 0.5
 
     fuera = [NOMBRES.get(c, c) for c in m.ENTRADA_NUM
              if pd.notna(caso[c]) and not (REF['rango'][c][0] <= caso[c] <= REF['rango'][c][1])]
     with der:
-        st.metric('El modelo predice que en 3 días la acción se mueve', f'{num(pred)} %',
-                  help='Desde el cierre previo al anuncio hasta el cierre del 3er día hábil.')
-        st.caption('Es la reacción del mercado al balance: cuánto se mueve la acción desde el último cierre antes del '
-                   'anuncio hasta el cierre del 3er día hábil.')
+        st.metric('Reacción estimada por el modelo (cierre previo → cierre de 3 ruedas)', f'{num(pred)} %')
+        st.metric('Potencial desde la apertura siguiente', f'{num(retorno_desde_apertura)} %',
+                  delta='supera el umbral' if decision_compra else 'no supera el umbral')
+        st.caption(f'Precio estimado al cierre de la tercera rueda: {num(precio_estimado_3r)} USD. '
+                   f'Confianza estimada de retorno positivo: {num(probabilidad_subida * 100, 1)} %. '
+                   'La apertura se usa solo después de predecir, para comparar el precio de entrada con la salida estimada.')
         if fuera:
             st.warning('Fuera de lo que vio el entrenamiento: ' + ', '.join(fuera) + '. El modelo no aprendió nada de '
                        'valores así; el Random Forest los trata como el valor más extremo que conoce, y la predicción '

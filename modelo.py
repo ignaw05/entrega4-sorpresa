@@ -1,9 +1,8 @@
-"""El modelo de la Entrega 3, tal como quedó elegido: mismo pipeline, mismas columnas, misma semilla.
+"""Modelo de la app: reacción del precio hasta el cierre de la tercera rueda.
 
-Todo el código de acá está copiado del notebook de la Entrega 3 (secciones 1, 2, 3, 7 y 8).
-Las decisiones no se recalculan, se verifican: el modelo final es el Random Forest elegido en validación
-(200 árboles, min_samples_leaf=20, max_depth=None) y el umbral sale de la misma búsqueda de la sección 7.
-`entrenar.py` lo corre y compara contra los números del notebook.
+El modelo predice el retorno desde el último cierre previo al anuncio hasta el cierre de t+3.
+La primera apertura posterior se usa luego, fuera del modelo, para evaluar la decisión de compra.
+entrenar.py guarda el pipeline y recalcula métricas para la aplicación.
 """
 import numpy as np
 import pandas as pd
@@ -18,6 +17,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 SEMILLA = 42
 HORIZONTE = 'close_adj_lead3'
 OBJETIVO = 'retorno_lead3'
+VERSION_OBJETIVO = 'cierre_previo_a_cierre_3r_v1'
 ELEGIDO = 'Random Forest'
 
 BLOQUES = {
@@ -104,7 +104,9 @@ def preparar(df_stocks):
     df = df_stocks.replace([np.inf, -np.inf], np.nan)
     df = df.dropna(subset=[HORIZONTE, 'close_adj_lag1', 'open_adj_lead', 'surprise_pct', 'reported_date'])
     df = df[(df['close_adj_lag1'] > 0) & (df['open_adj_lead'] > 0)].copy()
+    # El modelo estima la reacción hasta el cierre de t+3 sin recibir la apertura posterior.
     df[OBJETIVO] = (df[HORIZONTE] / df['close_adj_lag1'] - 1) * 100
+    # La apertura se usa después, fuera del modelo, para evaluar una compra.
     df['retorno_operable'] = (df[HORIZONTE] / df['open_adj_lead'] - 1) * 100
     df['salto_apertura'] = (df['open_adj_lead'] / df['close_adj_lag1'] - 1) * 100
     df['trimestre'] = df['reported_date'].dt.to_period('Q')
@@ -124,8 +126,9 @@ def preparar(df_stocks):
 
 # ---------- Sección 7: regla de inversión ----------
 def esperado_desde_apertura(datos, pred):
-    precio_pred = datos['close_adj_lag1'].to_numpy() * (1 + np.asarray(pred) / 100)
-    return (precio_pred / datos['open_adj_lead'].to_numpy() - 1) * 100
+    """Convierte la reacción predicha en retorno potencial desde el precio de entrada."""
+    precio_estimado = datos['close_adj_lag1'].to_numpy() * (1 + np.asarray(pred, dtype=float) / 100)
+    return (precio_estimado / datos['open_adj_lead'].to_numpy() - 1) * 100
 
 
 def prob_subida(calibrador, esperado):
@@ -185,7 +188,7 @@ def buscar_umbral(esperado, prob, precio, real):
 
 # ---------- Todo junto ----------
 def entrenar(df_stocks):
-    """Reproduce la Entrega 3 para el modelo elegido y devuelve lo que usa la aplicación."""
+    """Ajusta el modelo de reacción y deriva, fuera del modelo, el retorno potencial de compra."""
     df, train, val, test = preparar(df_stocks)
     train_val = pd.concat([train, val])
     anios_cv = sorted(train['anio'].unique())[-5:]
@@ -193,14 +196,19 @@ def entrenar(df_stocks):
     rf = random_forest()
 
     # Validación cruzada temporal (sección 4) y predicciones fuera de muestra para calibrar (sección 7)
-    mae_folds, partes_pred, partes_esp, reales = [], [], [], []
+    mae_folds, mae_piso_folds, partes_pred, partes_esp, reales = [], [], [], [], []
     for i_tr, i_va in folds:
-        pipe = armar_pipeline(rf, NUM_FINAL, CAT_FINAL).fit(train.loc[i_tr, COLUMNAS_CRUDAS], train.loc[i_tr, OBJETIVO])
-        pred = pipe.predict(train.loc[i_va, COLUMNAS_CRUDAS])
-        mae_folds.append(np.mean(np.abs(train.loc[i_va, OBJETIVO].to_numpy() - pred)))
+        train_fold = train.loc[i_tr]
+        valid_fold = train.loc[i_va]
+        pipe = armar_pipeline(rf, NUM_FINAL, CAT_FINAL).fit(train_fold[COLUMNAS_CRUDAS], train_fold[OBJETIVO])
+        pred = pipe.predict(valid_fold[COLUMNAS_CRUDAS])
+        y_valid = valid_fold[OBJETIVO].to_numpy()
+        mae_folds.append(np.mean(np.abs(y_valid - pred)))
+        piso_fold = float(train_fold[OBJETIVO].mean())
+        mae_piso_folds.append(np.mean(np.abs(y_valid - piso_fold)))
         partes_pred.append(pred)
-        partes_esp.append(esperado_desde_apertura(train.loc[i_va], pred))
-        reales.append(train.loc[i_va, 'retorno_operable'].to_numpy())
+        partes_esp.append(esperado_desde_apertura(valid_fold, pred))
+        reales.append(valid_fold['retorno_operable'].to_numpy())
     esp_oof = np.concatenate(partes_esp)
     sube_oof = (np.concatenate(reales) > 0).astype(int)
     calibrador = LogisticRegression(C=1e6).fit(np.clip(esp_oof, -RECORTE_ESP, RECORTE_ESP).reshape(-1, 1), sube_oof)
@@ -228,8 +236,15 @@ def entrenar(df_stocks):
     pred['compraria'] = (pred['retorno_esperado'] > umbral) & (pred['confianza'] > 0.5)
     pred['trimestre'] = pred['trimestre'].astype(str)
 
-    metricas = {'mae_cv': float(np.mean(mae_folds)), 'mae_cv_desvio': float(np.std(mae_folds, ddof=1)),
+    mae_test_rf = float(np.mean(np.abs(test[OBJETIVO].to_numpy() - pred_test)))
+    mae_test_piso = float(np.mean(np.abs(test[OBJETIVO].to_numpy() - train_val[OBJETIVO].mean())))
+    metricas = {'objetivo': VERSION_OBJETIVO,
+                'mae_cv': float(np.mean(mae_folds)), 'mae_cv_desvio': float(np.std(mae_folds, ddof=1)),
+                'mae_piso_cv': float(np.mean(mae_piso_folds)),
+                'mae_piso_cv_desvio': float(np.std(mae_piso_folds, ddof=1)),
                 'mae_test': float(np.mean(np.abs(test[OBJETIVO].to_numpy() - pred_test))),
+                'mae_piso_test': mae_test_piso,
+                'mejora_mae_test_pct': float((mae_test_piso - mae_test_rf) / mae_test_piso * 100),
                 'umbral': umbral, 'retorno_val': ret_val, 'anios_cv': [int(a) for a in anios_cv],
                 'calibracion': {'a': float(calibrador.intercept_[0]), 'b': float(calibrador.coef_[0, 0])}}
     referencia = {  # lo que necesita «Probá el modelo»: rango y valores que vio el entrenamiento

@@ -1,49 +1,69 @@
-# ¿La sorpresa del balance mueve la acción? — App (Entrega 4)
+# Entrega 4 · ¿Qué ocurre con la acción después del balance?
 
-## Correrla local
-```
-pip install -r requirements.txt
-streamlit run app.py
-```
-Datos: `silver_stocks_2.csv`, el Silver del pipeline. Si está en esta carpeta, la app usa ese; si no, lo baja del
-Drive del proyecto (ID `1EFASiJezcUvgZku6Z-ixgfOc2740E9M_`).
+Aplicación interactiva en Streamlit para explorar la sorpresa de resultados, estimar el precio de cierre de la tercera
+rueda posterior al anuncio y compararlo con la primera apertura negociable para evaluar una posible compra.
 
-## El modelo
-`modelo.py` tiene el pipeline de la Entrega 3 copiado tal cual (`Ratios`, `Recortar`, partición por fecha,
-Random Forest con 200 árboles y `min_samples_leaf=20`, calibración de Platt y búsqueda del umbral único).
+## Objetivo del modelo
 
-```
-python entrenar.py
-```
-entrena con la misma semilla (42), escribe `modelo_final.joblib` y `predicciones.csv`, y compara contra el notebook:
+La variable objetivo es el retorno porcentual desde el último cierre previo al anuncio hasta el cierre de la tercera rueda:
 
-| | App | Notebook E3 |
-|---|---|---|
-| MAE validación cruzada | 5,149 ± 0,515 | 5,149 ± 0,515 |
-| MAE test 2026Q3 | 5,829 | 5,829 |
-| Umbral único | 18,5 % | 18,5 % |
-| Retorno s/ presupuesto en validación | 6,6354 % | 6,6354 % |
-| Compras con 1.000 USD en test | 4, +38,55 USD | 4, +38,55 USD |
+\[
+\text{retorno\_lead3} = 100 \times
+\left(\frac{\text{close\_adj\_lead3}}{\text{close\_adj\_lag1}} - 1\right)
+\]
 
-**Si los datos cambian:** reemplazar el CSV, correr `python entrenar.py` y subir los dos archivos que genera.
-Si `modelo_final.joblib` no está o no se puede leer, la app entrena el modelo sola al arrancar (tarda un par de minutos).
-El `.joblib` se guardó con scikit-learn 1.9.1; si lo regeneran con otra versión, cambien la versión en `requirements.txt`.
+La predicción usa los datos publicados con el balance y el cierre previo, sin usar la apertura de la rueda siguiente.
+Después de predecir el cierre de la tercera rueda, la aplicación compara ese precio estimado con open_adj_lead para
+calcular el retorno potencial de una compra. open_adj_lead, close_adj_lead3 y close_adj_lead7 no son predictores.
+ma30 también queda fuera porque incluye la rueda de reacción.
 
-## Archivos
-- `app.py`: la página, en el orden de la historia (portada, datos, hallazgos, modelo) y la copa (explorá, probá, simulá).
-- `graficos.py`: todos los gráficos, en Altair. Los del tallo tienen el mismo código que el notebook de la Entrega 4.
-- `modelo.py` y `entrenar.py`: el modelo de la Entrega 3 y el script que lo entrena.
-- `contenido.py`: las tablas de los «Cómo lo sabemos».
-- `estilo.css` y `.streamlit/config.toml`: el estilo.
+El Random Forest conserva el objetivo planteado en la Entrega 3. La app muestra su error frente a un Dummy que predice
+la media, con validación temporal y un trimestre de test separado. Las ganancias simuladas no contemplan costos de operación.
 
-## Qué toca cada control de la copa
-- **Explorá** (controles de Altair, debajo del gráfico): «Eje vertical» cambia el campo del eje y (`transform_calculate`);
-  «Lo predijo», «Sector» y «Balances» filtran los datos (`transform_filter`). Arrastrar y la rueda del mouse cambian la escala
-  (zoom). El tooltip muestra lo que dijo el modelo sobre cada balance.
-- **Probá el modelo**: los campos arman una fila con las columnas crudas del Silver, que pasa por el pipeline final.
-  Avisa si un valor queda fuera del rango que vio el entrenamiento.
-- **Simulá una inversión**: el presupuesto, el período, los sectores y el tamaño filtran los balances; sobre ese universo
-  corre la misma regla de compra de la Entrega 3 (`simular_presupuesto`).
+## Ejecutar localmente
 
-## Publicarla
-En share.streamlit.io: New app → el repositorio del grupo → archivo principal `app/app.py`.
+Instalación: pip install -r requirements.txt
+
+Iniciar: streamlit run app.py
+
+La aplicación usa silver_stocks_2.csv de esta carpeta. Si no está, lo descarga desde el archivo compartido del
+proyecto. El CSV corresponde a la salida Silver del pipeline; para actualizar los datos, reemplazarlo por el Silver
+validado más reciente.
+
+## Regenerar modelo y predicciones
+
+Ejecutar: python entrenar.py
+
+El script vuelve a ajustar el modelo, busca el umbral en validación temporal y genera:
+
+- modelo_final.joblib: pipeline entrenado, calibrador, umbral, métricas y rangos de referencia.
+- predicciones.csv: predicciones fuera de muestra para la exploración y simulación.
+
+La aplicación verifica la versión del objetivo y regenera los archivos si no corresponden; ejecutar entrenar.py de
+antemano evita la demora de la primera carga. Si cambian los datos o el pipeline, volver a ejecutar el script antes de
+publicar para mantener la app alineada con la Entrega 3.
+
+## Estructura
+
+- app.py: relato, interacción, exploración de balances, prueba del modelo y simulación.
+- graficos.py: gráficos Altair y sus campos, marcas, transformaciones y controles.
+- modelo.py: objetivo, partición temporal, pipeline, evaluación y simulación.
+- entrenar.py: regeneración reproducible del artefacto y predicciones.
+- contenido.py: tablas técnicas que aparecen en “Cómo lo sabemos”.
+- estilo.css y .streamlit/config.toml: presentación visual.
+
+## Reproducir y publicar
+
+La app puede ejecutarse localmente con los comandos anteriores. Para publicarla en Streamlit Community Cloud, usar
+este repositorio, app.py como archivo principal y dejar el CSV accesible en el repositorio o configurar el acceso al
+archivo compartido. La aplicación regenera el modelo si no encuentra un artefacto de la versión actual del objetivo.
+
+## Limitaciones a explicar
+
+- La métrica y el simulador usan un único trimestre de test (2026Q3); la simulación no demuestra rentabilidad futura.
+- No se incluyen comisiones, impuestos, deslizamiento ni restricciones de liquidez.
+- Los fundamentales se vinculan por trimestre fiscal, pero el dataset no conserva una fecha de disponibilidad
+  histórica por cada campo. Hay que verificar el momento de publicación antes de tratarlos como información conocida
+  exactamente al anunciarse.
+- Las observaciones de varias empresas comparten días y condiciones de mercado; la incertidumbre debe interpretarse
+  considerando esa dependencia.

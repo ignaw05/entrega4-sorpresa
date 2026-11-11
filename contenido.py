@@ -25,46 +25,14 @@ T_PARTICION = tabla(
      ["Validación", "1.046", "538", "07/01/2026", "30/06/2026", "9,3 %", "Elegir el umbral de compra y el modelo final."],
      ["Test", "501", "498", "01/07/2026", "30/09/2026", "4,5 %", "Medir una sola vez el modelo elegido."]])
 
-T_MAE = tabla(
-    ["Modelo", "MAE validación cruzada (pp)", "Mejora vs. piso", "MAE test 2026Q3 (pp)"],
-    [["Dummy (media) · piso", "5,375 ± 0,529", "—", "6,013"],
-     ["Regresión lineal", "5,256 ± 0,572", "−2,2 %", "—"],
-     ["Árbol de decisión", "5,215 ± 0,523", "−3,0 %", "—"],
-     ["Gradient Boosting", "5,174 ± 0,509", "−3,7 %", "—"],
-     ["<b>Random Forest</b>", "<b>5,149 ± 0,515</b>", "<b>−4,2 %</b>", "<b>5,829</b>"]])
-
-T_RETORNO = tabla(
-    ["Modelo", "Umbral", "Retorno medio s/ presupuesto", "Peor presupuesto", "Mejor presupuesto", "Presupuestos con ganancia"],
-    [["<b>Random Forest</b>", "18,5 %", "<b>+6,64 %</b>", "+5,68 %", "+10,35 %", "100 %"],
-     ["Gradient Boosting", "18 %", "+6,26 %", "+4,35 %", "+10,35 %", "100 %"],
-     ["Árbol de decisión", "19 %", "+5,55 %", "+2,97 %", "+7,92 %", "100 %"],
-     ["Regresión lineal", "9 %", "+3,80 %", "+1,49 %", "+9,11 %", "100 %"],
-     ["Comprar todo", "—", "+0,31 %", "−2,76 %", "+1,69 %", "79 %"],
-     ["Dummy (media)", "18,5 %", "−0,42 %", "−4,02 %", "+1,96 %", "36 %"]])
-
-T_COMPRAS = tabla(
-    ["#", "Ticker", "Fecha del balance", "Acciones", "Precio de compra (USD)", "Pagó (USD)", "Precio de venta (USD)",
-     "Vendió en (USD)", "Ganancia (USD)", "Resultado", "Retorno real", "Retorno esperado", "Confianza"],
-    [["1", "CDW", "05/08/2026", "3", "114,90", "344,70", "135,78", "407,34", '<span class="gana">+62,64</span>', "ganó", "+18,17 %", "+31,44 %", "55,9 %"],
-     ["2", "BRKR", "04/08/2026", "3", "54,03", "162,08", "53,37", "160,10", '<span class="pierde">−1,98</span>', "perdió", "−1,22 %", "+19,86 %", "54,9 %"],
-     ["3", "AMKR", "27/07/2026", "4", "51,70", "206,82", "49,78", "199,11", '<span class="pierde">−7,71</span>', "perdió", "−3,73 %", "+20,48 %", "55,0 %"],
-     ["4", "DKS", "25/08/2026", "2", "141,02", "282,05", "133,82", "267,64", '<span class="pierde">−14,40</span>', "perdió", "−5,11 %", "+20,16 %", "54,9 %"],
-     ["<b>Total</b>", "", "", "", "", "<b>995,65</b>", "", "<b>1.034,19</b>", '<b class="gana">+38,55</b>', "", "", "", ""]],
-    negrita_ultima=True)
-
-SOPORTE = [
-    ("Todas", 501, "Sorpresa (USD) (+2,52), Flujo operativo (+1,28), Sorpresa (%) (+1,20)", "Activos totales (−0,57), Dividendos (−0,41), Precio previo (−0,38)"),
-    ("Industrials", 116, "Sorpresa (USD) (+2,88), Sorpresa (%) (+1,58), Flujo operativo (+1,57)", "Activos totales (−0,73), Dividendos (−0,52), Caja (−0,44)"),
-    ("Consumer Cyclical", 74, "Sorpresa (USD) (+3,25), Flujo operativo (+1,70), Sorpresa (%) (+1,43)", "Activos totales (−0,83), Precio previo (−0,55), Dividendos (−0,52)"),
-    ("Technology", 59, "Sorpresa (USD) (+2,77), Sorpresa (%) (+1,39), Flujo operativo (+1,33)", "Precio previo (−0,51), Dividendos (−0,42), Caja (−0,35)"),
-    ("Utilities", 39, "Flujo operativo (+0,79), Margen operativo (+0,44), Sorpresa (USD) (+0,42)", "Activos totales (−0,32), Ganancia neta (−0,30), Pasivo corriente (−0,25)"),
-    ("Healthcare", 39, "Sorpresa (USD) (+2,74), Sorpresa (%) (+1,34), Flujo operativo (+0,88)", "Precio previo (−0,28), Activos totales (−0,28), Caja (−0,25)"),
-    ("Energy", 35, "Sorpresa (USD) (+2,44), Sorpresa (%) (+1,15), Flujo operativo (+0,81)", "Dividendos (−0,37), Activos totales (−0,37), Margen bruto (−0,22)"),
-    ("Basic Materials", 33, "Sorpresa (USD) (+2,61), Flujo operativo (+1,37), Sorpresa (%) (+1,29)", "Activos totales (−0,54), Dividendos (−0,50), Precio previo (−0,43)"),
-    ("Consumer Defensive", 31, "Sorpresa (USD) (+2,70), Sorpresa (%) (+1,23), Flujo operativo (+0,93)", "Activos totales (−0,56), Precio previo (−0,44), Dividendos (−0,31)"),
-    ("Real Estate", 29, "Flujo operativo (+1,42), Sorpresa (USD) (+1,38), Margen de flujo libre (+0,26)", "Activos totales (−1,02), Precio previo (−0,45), Dividendos (−0,33)"),
-    ("Financial Services", 29, "Sorpresa (USD) (+1,83), Flujo operativo (+0,89), Sorpresa (%) (+0,85)", "Precio previo (−0,39), Dividendos (−0,33), Inversión (capex) (−0,29)"),
-    ("Communication Services", 17, "Sorpresa (USD) (+3,00), Flujo operativo (+1,13), Sorpresa (%) (+0,84)", "Activos totales (−0,92), Dividendos (−0,42), Pasivo corriente (−0,32)"),
-]
-T_SOPORTE = tabla(["Sector", "Balances (test)", "Empujan a comprar", "Empujan a no comprar"],
-                  [[s, str(b), a, c] for s, b, a, c in SOPORTE])
+def tabla_metricas(metricas):
+    """Tabla recalculada con la versión actual del objetivo del modelo."""
+    mejora = metricas['mejora_mae_test_pct']
+    return tabla(
+        ["Modelo", "MAE validación cruzada (pp)", "MAE test 2026Q3 (pp)", "Cambio vs. piso en test"],
+        [["Random Forest (candidato)",
+          f"{metricas['mae_cv']:.3f} ± {metricas['mae_cv_desvio']:.3f}",
+          f"{metricas['mae_test']:.3f}", f"{mejora:+.1f} %"],
+         ["Dummy (media)",
+          f"{metricas['mae_piso_cv']:.3f} ± {metricas['mae_piso_cv_desvio']:.3f}",
+          f"{metricas['mae_piso_test']:.3f}", "—"]])

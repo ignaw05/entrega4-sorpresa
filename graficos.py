@@ -35,11 +35,11 @@ def fmt(v):   # -2,9 % · 14 % (coma decimal, sin decimales si es grande)
     return t.replace('-', '−').replace('.', ',') + ' %'
 
 
-# ---------- 1. Los datos: retorno a 3 días según la sorpresa (Entrega 4, celda 3) ----------
+# ---------- 1. Los datos: reacción desde el cierre previo hasta t+3 ----------
 def grafico_datos(df_stocks):
     d = (df_stocks.replace([np.inf, -np.inf], np.nan)
            .dropna(subset=['surprise_pct', 'close_adj_lag1', 'close_adj_lead3']))
-    d = d[d['close_adj_lag1'] > 0].copy()
+    d = d[(d['close_adj_lag1'] > 0) & (d['close_adj_lead3'] > 0)].copy()
     d['retorno_3d'] = (d['close_adj_lead3'] / d['close_adj_lag1'] - 1) * 100
 
     N_GRUPOS = 20   # 20 grupos con la misma cantidad de balances, de menor a mayor sorpresa
@@ -83,7 +83,7 @@ def grafico_datos(df_stocks):
 
     return (zona + cero + rango + caja + mediana).properties(
         width=720, height=ALTO,
-        title=alt.TitleParams('Retorno a 3 días según la sorpresa del balance',
+        title=alt.TitleParams('Reacción hasta el cierre de la tercera rueda, según la sorpresa',
                               subtitle=[f'{len(d):,} balances en 20 grupos del mismo tamaño. Pasá el mouse por un grupo.'.replace(',', '.'),
                                         'Raya: de 10 % a 90 % de los balances · caja: 25 % a 75 % · marca naranja: mediana.']))
 
@@ -128,95 +128,33 @@ def grafico_hallazgo(df_stocks):
                               subtitle='Caída fuerte: retorno de −1,98 % o menos entre el cierre previo y la primera apertura. 4 grupos con la misma cantidad de anuncios.'))
 
 
-# ---------- 3. El modelo: retorno por modelo en validación (Entrega 4, celda 10) ----------
-# Resumen de validación de la Entrega 3 (28 presupuestos de 100 a 10.000 USD, cada modelo con su umbral único)
-RESUMEN_RET = pd.DataFrame([
-    ('Random Forest',     6.6354,  5.68, 10.35, 100.0000, 18.5),
-    ('Gradient Boosting', 6.2568,  4.35, 10.35, 100.0000, 18.0),
-    ('Árbol de decisión', 5.5529,  2.97,  7.92, 100.0000, 19.0),
-    ('Regresión lineal',  3.7989,  1.49,  9.11, 100.0000,  9.0),
-    ('Comprar todo',      0.3100, -2.76,  1.69,  78.5714, np.nan),
-    ('Dummy (media)',    -0.4211, -4.02,  1.96,  35.7143, 18.5),
-], columns=['modelo', 'medio', 'minimo', 'maximo', 'con_ganancia', 'umbral'])
-
-
-def grafico_modelos():
-    r = RESUMEN_RET.copy()
-    r['umbral_txt'] = r['umbral'].map(lambda u: '—' if pd.isna(u) else f'{u:g} %'.replace('.', ','))
-    r['y_txt'] = r['medio'].map(lambda v: v + .45 if v >= 0 else v - .45)
-    r['etiqueta'] = r['medio'].map(lambda v: f'{v:.2f} %'.replace('-', '−').replace('.', ','))
-    orden = r.sort_values('medio', ascending=False)['modelo'].tolist()
-
-    hover = alt.selection_point(name='hover', fields=['modelo'], on='pointerover', clear='pointerout')
-    opac = alt.condition(hover, alt.value(1), alt.value(.6))
-    tip = [alt.Tooltip('modelo:N', title='Modelo'),
-           alt.Tooltip('medio:Q', title='Retorno medio (%)', format='+.2f'),
-           alt.Tooltip('minimo:Q', title='Peor presupuesto (%)', format='+.2f'),
-           alt.Tooltip('maximo:Q', title='Mejor presupuesto (%)', format='+.2f'),
-           alt.Tooltip('con_ganancia:Q', title='Presupuestos con ganancia (%)', format='.0f'),
-           alt.Tooltip('umbral_txt:N', title='Umbral de compra')]
-
-    base = alt.Chart(r).encode(x=alt.X('modelo:N', sort=orden, title=None, axis=alt.Axis(labelAngle=-15)))
-    barras = base.mark_bar().encode(
-        y=alt.Y('medio:Q', title=['Retorno s/ presupuesto (%)', 'promedio entre presupuestos']),
-        color=alt.Color('modelo:N', scale=alt.Scale(domain=list(COLOR), range=list(COLOR.values())), legend=None),
-        stroke=alt.condition(alt.datum.modelo == ELEGIDO, alt.value('black'), alt.value('transparent')),
-        strokeWidth=alt.value(2.5), opacity=opac, tooltip=tip).add_params(hover)
-    numeros = base.mark_text(fontSize=12).encode(y='y_txt:Q', text='etiqueta:N')
-    cero = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black').encode(y='y:Q')
-
-    return (barras + cero + numeros).properties(
-        width=620, height=340,
-        title=alt.TitleParams('Validación: retorno promedio sobre el presupuesto por modelo',
-                              subtitle=f'Borde negro: {ELEGIDO}'))
-
-
-# ---------- 3b. El modelo: MAE contra el piso (Entrega 4, celda 11) ----------
-# MAE de la Entrega 3: validación cruzada temporal en train (media ± desvío entre folds) y test (sólo piso y modelo final)
-MAE = pd.DataFrame([
-    ('Random Forest',     5.149, 0.515, 5.829),
-    ('Gradient Boosting', 5.174, 0.509, np.nan),
-    ('Árbol de decisión', 5.215, 0.523, np.nan),
-    ('Regresión lineal',  5.256, 0.572, np.nan),
-    ('Dummy (media)',     5.375, 0.529, 6.013),
-], columns=['modelo', 'mae_cv', 'desvio', 'mae_test'])
-
-
-def grafico_mae():
-    mae = MAE.copy()
-    PISO_CV = mae.loc[mae['modelo'] == 'Dummy (media)', 'mae_cv'].iloc[0]
-    mae['mejora'] = (1 - mae['mae_cv'] / PISO_CV) * 100
-    mae['etiqueta'] = mae['mae_cv'].map(lambda v: f'{v:.2f}'.replace('.', ','))
-    orden = mae['modelo'].tolist()                                      # ya está de menor a mayor MAE
-
-    hover = alt.selection_point(name='hover', fields=['modelo'], on='pointerover', clear='pointerout')
-    opac = alt.condition(hover, alt.value(1), alt.value(.55))
-    colores = alt.Scale(domain=list(COLOR), range=list(COLOR.values()))
-    tip = [alt.Tooltip('modelo:N', title='Modelo'),
-           alt.Tooltip('mae_cv:Q', title='MAE validación cruzada (pp)', format='.3f'),
-           alt.Tooltip('desvio:Q', title='± desvío entre folds (pp)', format='.3f'),
-           alt.Tooltip('mejora:Q', title='Mejora vs piso (%)', format='+.1f'),
-           alt.Tooltip('mae_test:Q', title='MAE test (pp)', format='.3f')]
-
-    y = alt.Y('modelo:N', sort=orden, title=None)
-    x_esc = alt.Scale(domain=[5.0, 6.2])
-    base = alt.Chart(mae).encode(y=y)
-    punto = base.mark_circle(size=170, stroke='black', strokeWidth=1.2).encode(
-        x=alt.X('mae_cv:Q', scale=x_esc, title='MAE (puntos porcentuales del retorno a 3 días) · menor es mejor'),
-        color=alt.Color('modelo:N', scale=colores, legend=None), opacity=opac, tooltip=tip).add_params(hover)
-    numeros = base.mark_text(dy=-16, fontSize=12).encode(x='mae_cv:Q', text='etiqueta:N')
-    test = (alt.Chart(mae.dropna(subset=['mae_test'])).mark_point(shape='diamond', size=130, filled=True, color='black')
-            .encode(y=y, x=alt.X('mae_test:Q', scale=x_esc),
-                    tooltip=[alt.Tooltip('modelo:N', title='Modelo'), alt.Tooltip('mae_test:Q', title='MAE test 2026Q3 (pp)', format='.3f')]))
-    piso = (alt.Chart(pd.DataFrame({'x': [PISO_CV]})).mark_rule(strokeDash=[5, 4], color='#6D6D6D')
-            .encode(x=alt.X('x:Q', scale=x_esc)))
-
-    return (piso + punto + numeros + test).properties(
-        width=640, height=300,
-        title=alt.TitleParams('Todos los modelos le ganan al piso, pero por poco: el MAE baja de 5,38 a 5,15 pp',
-                              subtitle=['Círculo: MAE en validación cruzada temporal. Rombo negro: MAE en test (2026Q3),',
-                                        'solo para el modelo final y el piso. Línea punteada: piso (predecir siempre la media).',
-                                        'La mejora (−4 %) es menor que el desvío entre folds (±0,5 pp): pasá el cursor para verlo.']))
+# ---------- 3. El modelo: Random Forest candidato contra el piso ----------
+def grafico_mae(metricas):
+    filas = [
+        {'modelo': 'Random Forest', 'conjunto': 'Validación cruzada (train)', 'mae': metricas['mae_cv'],
+         'desvio': metricas['mae_cv_desvio']},
+        {'modelo': 'Dummy (media)', 'conjunto': 'Validación cruzada (train)', 'mae': metricas['mae_piso_cv'],
+         'desvio': metricas['mae_piso_cv_desvio']},
+        {'modelo': 'Random Forest', 'conjunto': 'Test 2026Q3', 'mae': metricas['mae_test'], 'desvio': 0.0},
+        {'modelo': 'Dummy (media)', 'conjunto': 'Test 2026Q3', 'mae': metricas['mae_piso_test'], 'desvio': 0.0},
+    ]
+    datos = pd.DataFrame(filas)
+    tip = [alt.Tooltip('modelo:N', title='Modelo'), alt.Tooltip('conjunto:N', title='Evaluación'),
+           alt.Tooltip('mae:Q', title='MAE (puntos porcentuales)', format='.3f'),
+           alt.Tooltip('desvio:Q', title='Desvío entre folds (pp)', format='.3f')]
+    base = alt.Chart(datos).encode(
+        y=alt.Y('conjunto:N', title=None, sort=['Validación cruzada (train)', 'Test 2026Q3']),
+        x=alt.X('mae:Q', title='MAE del retorno del cierre previo al cierre de la tercera rueda (%)', scale=alt.Scale(zero=True)),
+        yOffset=alt.YOffset('modelo:N'),
+        color=alt.Color('modelo:N', scale=alt.Scale(domain=['Random Forest', 'Dummy (media)'],
+                                                      range=[COLOR['Random Forest'], COLOR['Dummy (media)']]), title=None),
+        tooltip=tip)
+    puntos = base.mark_circle(size=170, stroke='white', strokeWidth=1).encode()
+    etiquetas = base.mark_text(dx=12, align='left', fontSize=11).encode(text=alt.Text('mae:Q', format='.2f'))
+    return (puntos + etiquetas).properties(
+        width=680, height=180,
+        title=alt.TitleParams('El bosque aleatorio se compara con una predicción de referencia',
+                              subtitle='Círculos: MAE; menor es mejor. El desvío entre años se consulta al pasar el cursor sobre validación cruzada.'))
 
 
 # =====================================================================================
