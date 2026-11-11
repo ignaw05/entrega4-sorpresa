@@ -72,9 +72,9 @@ sobre la empresa, el precio de la acción tendría que reaccionar a ella.</p>
 <p class="oracion">Una sorpresa negativa eleva 24 puntos el riesgo de una caída fuerte, y con esa señal un Random Forest
 elige compras que ganan 6,6 % del presupuesto en validación, aunque predice el retorno apenas mejor que la media.</p>
 <div class="nums">
-<div class="num"><span>+24,4 pp</span><p>más probabilidad de caída fuerte con sorpresa negativa que con positiva, a igual magnitud</p></div>
-<div class="num"><span>6,6 %</span><p>de retorno sobre el presupuesto en validación, contra 0,3 % de comprar todo</p></div>
-<div class="num"><span>−4 %</span><p>de error (MAE 5,15 contra 5,38 pp del piso): menos que el desvío entre folds</p></div>
+<div class="num"><span>9,48 %</span><p>la mayor ganancia reportada sobre el presupuesto, en el test de 2026Q3</p></div>
+<div class="num"><span>5,15</span><p>de MAE: el error medio del modelo, en puntos porcentuales del retorno a 3 días</p></div>
+<div class="num"><span>Sorpresa</span><p>el predictor más determinante del modelo</p></div>
 </div>
 <p class="nota">Medido sobre 11.235 balances trimestrales de 585 empresas, del 25/01/2008 al 30/09/2026
 (captura del pipeline del 26/10/2026).</p>
@@ -270,10 +270,10 @@ NOMBRES = {'total_assets': 'Activos totales', 'total_current_assets': 'Activo co
 
 EJEMPLOS = df_stocks.dropna(subset=['reported_eps', 'consensus_eps', 'close_adj_lag1']).copy()
 EJEMPLOS = EJEMPLOS[EJEMPLOS['reported_date'] >= '2025-01-01'].sort_values(['ticker', 'reported_date'])
-EJEMPLOS['opcion'] = (EJEMPLOS['ticker'] + ' · ' + EJEMPLOS['reported_date'].dt.strftime('%d/%m/%Y') + ' · '
-                      + EJEMPLOS['sector'].fillna('sin sector'))
+EJEMPLOS = EJEMPLOS.drop_duplicates('ticker', keep='last')   # un balance por empresa: el último
+EJEMPLOS['opcion'] = EJEMPLOS['ticker']
 OPCIONES = EJEMPLOS['opcion'].tolist()
-DEFECTO = next((o for o in OPCIONES if o.startswith('NVDA · 25/02/2026')), OPCIONES[0])
+DEFECTO = 'NVDA' if 'NVDA' in OPCIONES else OPCIONES[0]
 
 
 def a_widgets(fila):
@@ -307,7 +307,7 @@ def sorpresa_pct():
 
 @st.fragment
 def probar():
-    st.selectbox('Partir de un balance real (desde 2025)', OPCIONES, key='p_ejemplo', on_change=elegir_ejemplo)
+    st.selectbox('Partir del último balance de una empresa', OPCIONES, key='p_ejemplo', on_change=elegir_ejemplo)
     izq, der = st.columns([1.05, 1], gap='large')
     with izq:
         with st.expander('La empresa', expanded=True):

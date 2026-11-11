@@ -271,7 +271,7 @@ def grafico_explora(pred, umbral):
     cero_y = alt.Chart(pd.DataFrame({'v': [0]})).mark_rule(color='black', strokeDash=[4, 3]).encode(y='v:Q')
 
     return (zona + regla + cero_y + puntos + compras + etiqueta).properties(
-        width=820, height=460,
+        width=740, height=460,
         title=alt.TitleParams(f'Los {len(d)} balances de 2026Q3: lo que esperaba el modelo, lo que pasó y si hubiera comprado',
                               subtitle=['Todo medido desde el precio de apertura, el primero al que se puede comprar. Con borde negro, los que hubiera comprado:',
                                         'arriba de la línea punteada ganaron, abajo perdieron. Rueda del mouse para hacer zoom, doble clic para volver.']))

@@ -53,13 +53,24 @@ html,body,.stApp,.stMain{background:var(--papel)!important}
 
 /* ---------- Gráficos y tablas en tarjeta ---------- */
 [data-testid="stVegaLiteChart"],.stVegaLiteChart{background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;
-  box-shadow:var(--sombra);padding:18px 18px 10px;margin:14px 0 6px;max-width:100%;overflow-x:auto}
-.vega-bindings,form.vega-bindings{display:flex;flex-wrap:wrap;gap:8px 22px;margin:12px 4px 4px;padding:10px 14px;background:var(--suave);border-radius:10px;font:14px var(--sans)}
-.vega-bind{display:flex;align-items:center;gap:6px}
-.vega-bind-name{font-weight:600;color:var(--tinta)}
-.vega-bind select{font:14px var(--sans);padding:4px 8px;border:1px solid var(--linea);border-radius:6px;background:#fff}
-.vega-bind-radio label{margin-right:10px}
-.vega-bind input[type=radio]{accent-color:var(--copa)}
+  box-shadow:var(--sombra);padding:16px 14px 10px;margin:14px 0 6px;max-width:100%;overflow-x:auto}
+/* Controles de los gráficos (sector y balances) */
+.vega-bindings,form.vega-bindings{display:flex!important;flex-wrap:wrap;align-items:center;gap:12px 32px;margin:18px 0 6px!important;
+  padding:12px 16px!important;background:var(--suave)!important;border:1px solid var(--linea)!important;border-radius:12px;width:fit-content!important;max-width:100%;font:14px var(--sans)}
+.vega-bind,.vega-bind>label{display:flex!important;align-items:center;gap:10px;margin:0!important;padding:0!important;width:auto!important}
+.vega-bind-name{display:inline!important;width:auto!important;min-width:0!important;margin:0!important;
+  font-size:11px!important;font-weight:600!important;letter-spacing:.12em;text-transform:uppercase;color:var(--gris)!important}
+.vega-bind select{appearance:none;-webkit-appearance:none;font:500 14px var(--sans);color:var(--tinta);cursor:pointer;
+  padding:7px 34px 7px 12px;border:1px solid var(--linea);border-radius:999px;max-width:280px;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235b6170' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 13px center}
+.vega-bind select:hover,.vega-bind select:focus{border-color:var(--copa);outline:none}
+/* radio como botones de una pastilla */
+.vega-bind-radio{display:inline-flex!important;gap:0!important;flex-wrap:nowrap!important;background:#fff;border:1px solid var(--linea);border-radius:999px;padding:3px}
+.vega-bind-radio input[type=radio]{position:absolute!important;opacity:0!important;width:0!important;height:0!important;margin:0!important}
+.vega-bind-radio label{display:inline-block!important;margin:0!important;padding:5px 14px;border-radius:999px;cursor:pointer;
+  font:500 13.5px var(--sans);color:var(--gris);transition:background .15s,color .15s}
+.vega-bind-radio label:hover{color:var(--tinta)}
+.vega-bind-radio input[type=radio]:checked+label{background:var(--copa);color:#fff}
 #vg-tooltip-element{font-family:var(--sans)!important;border-radius:8px!important;border:1px solid var(--linea)!important;box-shadow:var(--sombra)!important}
 
 .tabla{overflow-x:auto;margin:10px 0 16px;border-radius:10px;border:1px solid var(--linea)}
