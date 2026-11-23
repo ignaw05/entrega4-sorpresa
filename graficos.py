@@ -160,10 +160,10 @@ def grafico_mae():
            alt.Tooltip('mae_test:Q', title='MAE test (pp)', format='.3f')]
 
     y = alt.Y('modelo:N', sort=orden, title=None)
-    x_esc = alt.Scale(domain=[5.0, 6.2])   # no empieza en 0: se aclara en el subtítulo
+    x_esc = alt.Scale(domain=[5.0, 6.2])   # no empieza en 0: se aclara junto al nombre del eje
     base = alt.Chart(mae).encode(y=y)
     punto = base.mark_circle(size=170, stroke='black', strokeWidth=1.2).encode(
-        x=alt.X('mae_cv:Q', scale=x_esc, title='MAE (puntos porcentuales del retorno a 3 días) · menor es mejor'),
+        x=alt.X('mae_cv:Q', scale=x_esc, title='MAE (pp del retorno a 3 días; el eje empieza en 5)'),
         color=alt.Color('modelo:N', scale=colores, legend=None), opacity=opac, tooltip=tip).add_params(hover)
     numeros = base.mark_text(dy=-16, fontSize=12).encode(x='mae_cv:Q', text='etiqueta:N')
     test = (alt.Chart(mae.dropna(subset=['mae_test'])).mark_point(shape='diamond', size=130, filled=True, color='black')
@@ -176,8 +176,7 @@ def grafico_mae():
         width=640, height=300,
         title=alt.TitleParams('Random Forest es el que menos se equivoca: 5,15 pp contra 5,38 del dummy',
                               subtitle=['Círculo: MAE en validación cruzada temporal. Rombo negro: MAE en test (2026Q3),',
-                                        'solo para el modelo final y el piso. Línea punteada: piso (predecir siempre la media).',
-                                        'Ojo: el eje empieza en 5, no en 0, para que se vean las diferencias, que son chicas.']))
+                                        'solo para el modelo final y el piso. Línea punteada: piso (predecir siempre la media).']))
 
 
 # ---------- 3c. El modelo: R² de la regresión, antes de la regla de compra ----------

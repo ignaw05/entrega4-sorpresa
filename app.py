@@ -86,7 +86,6 @@ depende de muchas otras cosas, y por eso un modelo acierta solo una parte. Aun a
 ganaron dinero.</p>
 <div class="nums">
 <div class="num"><span>63 %</span><p>de las acciones con sorpresa negativa bajan en los 3 días siguientes. Con sorpresa positiva bajan el 42 %.</p></div>
-<div class="num"><span>+24 pp</span><p>más de probabilidad de una caída fuerte cuando la sorpresa es negativa, con sorpresas del mismo tamaño.</p></div>
 <div class="num"><span>+6,6 %</span><p>ganó la estrategia del modelo sobre el presupuesto en el 1.er semestre de 2026. El dummy perdió 0,4 %.</p></div>
 </div>
 <p class="nota">Medido sobre 11.235 balances trimestrales de 585 empresas, del 25/01/2008 al 30/09/2026
@@ -214,6 +213,8 @@ MEDIA_TRAIN = m.preparar(df_stocks)[1][m.OBJETIVO].mean()
 html(f"""
 <div id="modelo" class="seccion"></div>
 <p class="etapa tallo">El modelo</p>
+<p>La columna objetivo fue <code>retorno_lead3</code>: representa, en porcentaje, cuánto cambió la acción desde el cierre
+anterior al anuncio hasta el cierre del tercer día posterior. Es el valor que intentamos predecir.</p>
 <h2>Primero elegimos el modelo que menos se equivoca: un Random Forest</h2>
 <p>Probamos cuatro modelos que, a partir del balance (la sorpresa, los márgenes, el flujo de caja, la deuda, el sector),
 predicen cuánto se va a mover la acción en tres días. Para compararlos usamos el <b>MAE</b>: cuántos puntos se equivoca
@@ -375,7 +376,8 @@ html(f"""
 <div id="proba" class="seccion"></div>
 <p class="etapa copa">Tu turno · Probá el modelo</p>
 <h2>Elegí una empresa, cambiale la sorpresa y mirá si el modelo compraría</h2>
-<p>Partimos del último balance real de la empresa y dejamos todo igual menos la sorpresa. El modelo predice cuánto se
+<p>Partimos del último balance real de la empresa. Además de la sorpresa, podés cambiar sus cinco atributos más importantes
+para el modelo: flujo operativo, dividendos, efectivo, retorno sobre activos y liquidez corriente. El modelo predice cuánto se
 mueve la acción desde el cierre previo al anuncio y, con el precio al que abrió ese día, calcula cuánto espera que suba
 desde la apertura, que es cuando se puede comprar. Compra si eso supera el umbral y si está más de 50 % seguro de que sube.</p>
 <p class="nota">El modelo casi nunca espera que una acción suba más de 9 % desde el cierre previo. Las compras con
@@ -410,6 +412,33 @@ fila = EJEMPLOS.loc[ss['p_ticker']]
 casos = pd.DataFrame([fila[m.COLUMNAS_CRUDAS]] * len(SORPRESAS)).reset_index(drop=True)
 casos['surprise_pct'] = SORPRESAS
 casos['surprise'] = SORPRESAS / 100 * abs(fila['consensus_eps'])
+# Cinco atributos con mayor importancia, excluidas las dos variables de sorpresa que ya se ajustan arriba.
+# Los deslizadores editan los ratios usados por el modelo y se traducen a sus columnas contables de entrada.
+ATRIBUTOS = [
+    ('flujo_op_sobre_activos', 'Flujo operativo / activos', 'operating_cashflow', 'total_assets'),
+    ('dividendos_sobre_activos', 'Dividendos / activos', 'dividend_payout', 'total_assets'),
+    ('cash_sobre_activos', 'Efectivo / activos', 'cash_and_equivalents', 'total_assets'),
+    ('roa', 'Retorno sobre activos (ROA)', 'net_income', 'total_assets'),
+    ('liquidez_corriente', 'Liquidez corriente', 'total_current_assets', 'total_current_liabilities'),
+]
+ratios = m.Ratios().transform(pd.DataFrame([fila[m.COLUMNAS_CRUDAS]]))
+ratios_entrenamiento = m.Ratios().transform(m.preparar(df_stocks)[1][m.COLUMNAS_CRUDAS])
+st.caption('Ajustá estos valores para ver cómo cambia la predicción. Los rangos corresponden a los balances de entrenamiento.')
+cols_atributos = st.columns(2)
+for i, (columna, etiqueta, numerador, denominador) in enumerate(ATRIBUTOS):
+    serie = ratios_entrenamiento[columna].dropna()
+    bajo, alto = np.nanquantile(serie, [0.01, 0.99])
+    if columna == 'liquidez_corriente':
+        bajo, alto = max(0.0, bajo), max(0.0, alto)
+    if not np.isfinite(bajo) or not np.isfinite(alto) or bajo >= alto:
+        bajo, alto = -1.0, 1.0
+    valor = ratios[columna].iloc[0]
+    valor = float(np.clip(valor if np.isfinite(valor) else serie.median(), bajo, alto))
+    paso = max((alto - bajo) / 100, 0.001)
+    elegido = cols_atributos[i % len(cols_atributos)].slider(
+        etiqueta, float(bajo), float(alto), value=valor, step=float(paso), format='%.3f',
+        key=f'p_atributo_{ss["p_ticker"]}_{columna}')
+    casos[numerador] = elegido * fila[denominador]
 pred = ART['pipe'].predict(casos[m.COLUMNAS_CRUDAS])
 curva = pd.DataFrame({'sorpresa': SORPRESAS, 'prediccion': pred,
                       'esperado': (fila['close_adj_lag1'] * (1 + pred / 100) / fila['open_adj_lead'] - 1) * 100})

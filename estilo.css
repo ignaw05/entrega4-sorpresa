@@ -41,7 +41,7 @@ html,body,.stApp,.stMain{background:var(--papel)!important}
 [data-testid="stMarkdownContainer"] p.oracion{font-family:var(--serif);font-size:24px;line-height:1.45;font-weight:500;color:var(--tinta);
   background:var(--tarjeta);border-left:4px solid var(--acento);border-radius:0 12px 12px 0;box-shadow:var(--sombra);
   padding:22px 28px;margin:32px 0 28px;max-width:none}
-.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:8px 0 20px}
+.nums{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:8px 0 20px}
 .num{background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;padding:22px 22px 20px;box-shadow:var(--sombra);position:relative;overflow:hidden}
 .num::after{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,var(--acento),#3d9ca1)}
 .num span{display:block;font-family:var(--serif);font-size:44px;font-weight:600;line-height:1.05;color:var(--acento);font-variant-numeric:tabular-nums}
