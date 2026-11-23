@@ -213,6 +213,7 @@ MEDIA_TRAIN = m.preparar(df_stocks)[1][m.OBJETIVO].mean()
 html(f"""
 <div id="modelo" class="seccion"></div>
 <p class="etapa tallo">El modelo</p>
+<h3 class="sub">Qué buscamos predecir: la columna objetivo</h3>
 <p>La columna objetivo fue <code>retorno_lead3</code>: representa, en porcentaje, cuánto cambió la acción desde el cierre
 anterior al anuncio hasta el cierre del tercer día posterior. Es el valor que intentamos predecir.</p>
 <h2>Primero elegimos el modelo que menos se equivoca: un Random Forest</h2>
