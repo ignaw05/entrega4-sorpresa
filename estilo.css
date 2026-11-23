@@ -132,3 +132,6 @@ footer{margin:64px 0 0;padding:24px 0 0;border-top:1px solid var(--linea);color:
 .panel .panel-sub{font-size:13px!important;color:var(--gris)!important;margin:2px 0 12px!important}
 .panel dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:14px}
 .panel dt{color:var(--gris)} .panel dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--tinta)}
+
+/* Sin controles de Vega, el formulario queda vacío y se ve como un círculo gris */
+.vega-bindings:empty{display:none!important}

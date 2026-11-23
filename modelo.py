@@ -193,13 +193,19 @@ def dummy_validacion(train, val):
 def buscar_umbral(esperado, prob, precio, real):
     """Umbral único de la sección 7: mayor retorno s/ presupuesto promediado entre los 28 presupuestos,
     con al menos MIN_COMPRAS compras en todos (o al menos una donde no se llega al mínimo con ningún umbral)."""
-    b = grilla(esperado, prob, precio, real)
+    r = por_umbral(grilla(esperado, prob, precio, real))
+    mejor = r[r['valido']].loc[lambda x: x['retorno'].idxmax()]      # en empate, el umbral más bajo
+    return float(mejor['umbral (%)']), float(mejor['retorno'])
+
+
+def por_umbral(b):
+    """Resume la grilla por umbral: retorno medio s/ presupuesto (%) y ganancia neta media (USD) de los 28
+    presupuestos, y si es una regla válida (al menos MIN_COMPRAS compras en todos los presupuestos donde se puede)."""
     factible = b.groupby('presupuesto (USD)')['compras'].max() >= MIN_COMPRAS
-    b['llega'] = b['presupuesto (USD)'].map(factible)
-    b['cumple'] = np.where(b['llega'], b['compras'] >= MIN_COMPRAS, b['compras'] > 0)
-    ok = b.groupby('umbral (%)')['cumple'].all()
-    prom = b.groupby('umbral (%)')['retorno s/ presupuesto (%)'].mean()[ok]
-    return float(prom.idxmax()), float(prom.max())
+    cumple = np.where(b['presupuesto (USD)'].map(factible), b['compras'] >= MIN_COMPRAS, b['compras'] > 0)
+    return (b.assign(cumple=cumple).groupby('umbral (%)')
+             .agg(retorno=('retorno s/ presupuesto (%)', 'mean'), ganancia=('ganancia (USD)', 'mean'),
+                  valido=('cumple', 'all'), compras_max=('compras', 'max')).reset_index())
 
 
 # ---------- Todo junto ----------

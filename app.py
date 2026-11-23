@@ -96,14 +96,14 @@ html("""
 <div id="datos" class="seccion"></div>
 <p class="etapa tallo">Los datos</p>
 <h2>Cuanto peor es la sorpresa, peor le va a la acción</h2>
-<p>Separamos los balances en ocho grupos: primero según el tamaño de la sorpresa (cuatro grupos con la misma cantidad
-de balances), y después según si fue negativa (la empresa ganó menos de lo esperado) o positiva (ganó más). Para cada
-grupo, el gráfico muestra cuánto se movió la acción en los tres días siguientes.</p>
+<p>Ordenamos los balances de la sorpresa más negativa (la empresa ganó mucho menos de lo esperado) a la más positiva
+(ganó mucho más), y los partimos en cuatro grupos con la misma cantidad de balances: los cuartiles. Para cada cuartil,
+el gráfico muestra cuánto se movió la acción en los tres días siguientes.</p>
 """)
 grafico(g.grafico_datos(df_stocks))
 html("""
-<p class="nota"><b>Qué mirar:</b> el número de cada grupo es el retorno típico. De izquierda a derecha pasa de negativo a
-positivo: las sorpresas negativas grandes son las que peor terminan. Pero las cajas son altas y se superponen: dentro de
+<p class="nota"><b>Qué mirar:</b> el número de cada cuartil es el retorno típico. De izquierda a derecha pasa de negativo a
+positivo: el cuartil de las sorpresas más bajas es el único donde la acción típica cae. Pero las cajas son altas y se superponen: dentro de
 un mismo grupo hay acciones que suben y otras que bajan mucho. La sorpresa inclina la balanza, no la decide.</p>
 """)
 with st.expander('Cómo lo sabemos'):
@@ -118,8 +118,7 @@ with st.expander('Cómo lo sabemos'):
     <h4>Qué se filtró, paso por paso</h4>
     <p>El punto de partida es el Silver que deja el pipeline: 11.317 anuncios de 585 empresas, con 37 columnas.</p>
     {c.T_FILTROS}
-    <p>En este gráfico y el siguiente quedan afuera los balances con sorpresa exactamente 0 %, que no son ni negativos ni
-    positivos.</p>
+    <p>En este gráfico y el siguiente quedan afuera los balances con sorpresa exactamente 0 %.</p>
     <h4>Cómo se reparten las 11.235 filas</h4>
     <p>La partición es por fecha, no al azar, porque el modelo se usa para predecir balances futuros: se ajusta con todo
     lo anterior a 2026, se elige con 2026Q1 y Q2 y se mide una sola vez con 2026Q3, el último trimestre completo.</p>
@@ -136,8 +135,9 @@ html("""
 <div id="hallazgos" class="seccion"></div>
 <p class="etapa tallo">Lo que encontramos</p>
 <h2>Lo que más pesa es el signo: una sorpresa negativa multiplica el riesgo de una caída fuerte</h2>
-<p>Con los mismos cuatro tamaños de sorpresa, comparamos cuántas acciones tuvieron una <b>caída fuerte</b> (bajar 1,98 %
-o más apenas abre el mercado) entre las sorpresas negativas y las positivas del mismo tamaño.</p>
+<p>Separamos los balances en cuatro grupos según el tamaño de la sorpresa, sin importar el signo, y dentro de cada grupo
+comparamos cuántas acciones tuvieron una <b>caída fuerte</b> (bajar 1,98 % o más apenas abre el mercado) entre las
+sorpresas negativas y las positivas del mismo tamaño.</p>
 """)
 grafico(g.grafico_hallazgo(df_stocks))
 html("""
@@ -145,15 +145,14 @@ html("""
 (positiva). Y la diferencia crece con el tamaño: en el grupo de las sorpresas más grandes, cae fuerte la mitad de las
 negativas y solo una de cada ocho positivas. El mercado castiga más una mala noticia de lo que premia una buena.</p>
 """)
-with st.expander('Cómo lo sabemos'):
-    html("""
-    <h4>Una hipótesis que se sostuvo: a igual magnitud de sorpresa, las negativas elevan el riesgo de caída fuerte</h4>
+html("""
+    <h3 class="sub">Una hipótesis que se sostuvo: a igual magnitud de sorpresa, las negativas elevan el riesgo de caída fuerte</h3>
     <p>Entre anuncios con una sorpresa de magnitud parecida, los que quedaron por debajo del consenso tuvieron
     <b>24,4 puntos porcentuales más</b> de probabilidad de una caída fuerte que los que quedaron por encima
     (IC 95 % por empresa: 21,4 a 26,9 pp). Está en verde (≥ 15 pp) y se repite en los cuatro grupos de magnitud: en el de
     mayor sorpresa, cae fuerte el 50,0 % de las negativas y el 12,7 % de las positivas. Una caída fuerte es un retorno de
     −1,98 % o menos entre el cierre previo y la apertura posterior al anuncio (el primer cuartil de ese retorno).</p>
-    <h4>Una que no: los anuncios pre-market no reaccionan distinto que los post-market</h4>
+    <h3 class="sub">Una que no: los anuncios pre-market no reaccionan distinto que los post-market</h3>
     <p>El movimiento a 3 días es parecido: 4,98 % en promedio, sin importar el signo, para los 6.589 anuncios pre-market,
     contra 5,39 % para los 4.600 post-market. La diferencia de 0,4 pp da un d de Cohen de 0,08 (IC 95 % por empresa:
     0,02 a 0,17), muy por debajo del corte de 0,20: rojo. Tampoco cambia la dirección (mediana de +0,41 % contra +0,50 %)
@@ -197,16 +196,17 @@ def calibracion(_pred):
                          v['open_adj_lead'].to_numpy(), v['retorno_operable'].to_numpy())
     esp_d, prob_d = m.dummy_validacion(train, val)
     grilla_d = m.grilla(esp_d, prob_d, val['open_adj_lead'].to_numpy(), val['retorno_operable'].to_numpy())
-    curvas = pd.concat([x.groupby('umbral (%)').agg(retorno=('retorno s/ presupuesto (%)', 'mean'), compras_max=('compras', 'max'))
-                         .reset_index().assign(modelo=n)
-                        for n, x in [(m.ELEGIDO, grilla_rf), ('Dummy (media)', grilla_d)]])
-    return r2, grilla_rf, curvas
+    curvas = pd.concat([m.por_umbral(x).assign(modelo=n) for n, x in [(m.ELEGIDO, grilla_rf), ('Dummy (media)', grilla_d)]])
+    return r2, curvas
 
 
 ART, PRED = cargar_modelo()
 UMBRAL = ART['umbral']
 U_TXT = f'{UMBRAL:g} %'.replace('.', ',')
-R2, GRILLA_RF, CURVAS = calibracion(PRED)
+R2, CURVAS = calibracion(PRED)
+RF = CURVAS[CURVAS['modelo'] == m.ELEGIDO]
+TOP10 = RF[RF['valido']].nlargest(10, 'retorno', keep='first')
+EN_UMBRAL = CURVAS[CURVAS['umbral (%)'] == UMBRAL].set_index('modelo')
 MEDIA_TRAIN = m.preparar(df_stocks)[1][m.OBJETIVO].mean()
 
 html(f"""
@@ -242,20 +242,23 @@ ganar más hay que calibrar <b>cuándo</b> comprar.</p>
 además tiene que estar más de 50 % seguro de que va a subir. Esa seguridad (la confianza) sale de comparar, en años
 anteriores, lo que el modelo esperaba con lo que pasó. El presupuesto se reparte entre las acciones que pasan el umbral,
 más plata a las de mayor confianza.</p>
-<p>Para elegir el umbral probamos todas las combinaciones de 90 umbrales (de 0 % a 44,5 %) y 28 presupuestos (de 100 a
-10.000 USD) con los balances del primer semestre de 2026, que el modelo no usó para aprender.</p>
+<p>Para elegir el umbral probamos 90 umbrales (de 0 % a 44,5 %), cada uno con 28 presupuestos (de 100 a 10.000 USD),
+con los balances del primer semestre de 2026, que el modelo no usó para aprender. Cada umbral es una regla de compra, y la
+medimos por su retorno medio sobre el capital: cuánto gana, en promedio de los 28 presupuestos, por cada 100 USD
+invertidos. Solo cuentan las reglas que compran al menos 3 acciones, para que el resultado no dependa de una sola.</p>
 """)
-grafico(g.grafico_umbral_mapa(GRILLA_RF, UMBRAL))
+grafico(g.grafico_umbral_top(TOP10, UMBRAL))
 html(f"""
-<p class="nota"><b>Qué mirar:</b> cada cuadradito es una combinación. A la izquierda (umbral bajo) el modelo compra
-muchas acciones y la ganancia se diluye. Hacia el centro se pone azul fuerte: compra pocas, las que espera que suban
-mucho. Muy a la derecha compra una o dos acciones, y el color depende de si a esa acción le fue bien: es suerte, no estrategia. El umbral elegido, {U_TXT}, es el que da la mayor ganancia promedio entre los 28
-presupuestos, siempre que compre al menos 3 acciones.</p>
+<p class="nota"><b>Qué mirar:</b> los mejores umbrales están todos entre 16 % y 21 %: el modelo gana más cuando
+compra pocas acciones, las que espera que suban mucho. Varios empatan en {num(TOP10['retorno'].max())} % porque
+terminan comprando las mismas acciones; nos quedamos con el más bajo, {U_TXT}.</p>
 """)
 grafico(g.grafico_umbral_curva(CURVAS, UMBRAL))
 html(f"""
-<p class="nota"><b>Qué mirar:</b> es el mismo cálculo, promediando los 28 presupuestos de cada umbral. Con {U_TXT}, el
-Random Forest gana 6,64 % del presupuesto y el dummy, con la misma regla, pierde 0,42 %. El modelo predice el número
+<p class="nota"><b>Qué mirar:</b> ahora en dólares, para todos los umbrales. Con {U_TXT}, el Random Forest gana en
+promedio {num(EN_UMBRAL.loc[m.ELEGIDO, 'ganancia'])} USD y el dummy, con la misma regla,
+{num(EN_UMBRAL.loc['Dummy (media)', 'ganancia'])} USD. En gris, los umbrales tan altos que el modelo compra una o dos
+acciones: ahí el resultado es suerte. El modelo predice el número
 exacto bastante mal, pero sirve para ordenar cuáles acciones conviene comprar.</p>
 """)
 with st.expander('Cómo lo sabemos'):
