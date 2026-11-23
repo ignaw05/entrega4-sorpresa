@@ -139,6 +139,12 @@ html("""
 <p>Separamos los balances en cuatro grupos según el tamaño de la sorpresa, sin importar el signo, y dentro de cada grupo
 comparamos cuántas acciones tuvieron una <b>caída fuerte</b> (bajar 1,98 % o más apenas abre el mercado) entre las
 sorpresas negativas y las positivas del mismo tamaño.</p>
+<h3 class="sub">Una hipótesis que se sostuvo: a igual magnitud de sorpresa, las negativas elevan el riesgo de caída fuerte</h3>
+<p>Entre anuncios con una sorpresa de magnitud parecida, los que quedaron por debajo del consenso tuvieron
+<b>24,4 puntos porcentuales más</b> de probabilidad de una caída fuerte que los que quedaron por encima
+(IC 95 % por empresa: 21,4 a 26,9 pp). Está en verde (≥ 15 pp) y se repite en los cuatro grupos de magnitud: en el de
+mayor sorpresa, cae fuerte el 50,0 % de las negativas y el 12,7 % de las positivas. Una caída fuerte es un retorno de
+−1,98 % o menos entre el cierre previo y la apertura posterior al anuncio (el primer cuartil de ese retorno).</p>
 """)
 grafico(g.grafico_hallazgo(df_stocks))
 html("""
@@ -147,12 +153,6 @@ html("""
 negativas y solo una de cada ocho positivas. El mercado castiga más una mala noticia de lo que premia una buena.</p>
 """)
 html("""
-    <h3 class="sub">Una hipótesis que se sostuvo: a igual magnitud de sorpresa, las negativas elevan el riesgo de caída fuerte</h3>
-    <p>Entre anuncios con una sorpresa de magnitud parecida, los que quedaron por debajo del consenso tuvieron
-    <b>24,4 puntos porcentuales más</b> de probabilidad de una caída fuerte que los que quedaron por encima
-    (IC 95 % por empresa: 21,4 a 26,9 pp). Está en verde (≥ 15 pp) y se repite en los cuatro grupos de magnitud: en el de
-    mayor sorpresa, cae fuerte el 50,0 % de las negativas y el 12,7 % de las positivas. Una caída fuerte es un retorno de
-    −1,98 % o menos entre el cierre previo y la apertura posterior al anuncio (el primer cuartil de ese retorno).</p>
     <h3 class="sub">Una que no: los anuncios pre-market no reaccionan distinto que los post-market</h3>
     <p>El movimiento a 3 días es parecido: 4,98 % en promedio, sin importar el signo, para los 6.589 anuncios pre-market,
     contra 5,39 % para los 4.600 post-market. La diferencia de 0,4 pp da un d de Cohen de 0,08 (IC 95 % por empresa:
@@ -160,6 +160,7 @@ html("""
     ni cuánto pesa la sorpresa: la correlación de Spearman entre sorpresa y retorno es 0,27 pre-market y 0,25 post-market.
     Quedan afuera los 64 anuncios sin hora informada.</p>
     """)
+grafico(g.grafico_hora_reporte(df_stocks))
 
 # ---------- El modelo ----------
 import modelo as m

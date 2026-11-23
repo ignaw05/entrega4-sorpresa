@@ -132,6 +132,44 @@ def grafico_hallazgo(df_stocks):
                               subtitle='Caída fuerte: −1,98 % o menos entre el cierre previo y la primera apertura. 4 grupos con la misma cantidad de anuncios.'))
 
 
+def grafico_hora_reporte(df_stocks):
+    """Hipótesis 4 de la EDA: distribución del retorno a 3 días y proporción que sube por hora del reporte."""
+    d = df_stocks.dropna(subset=['report_time', 'close_adj_lag1', 'close_adj_lead3']).copy()
+    d = d[d['report_time'].isin(['pre-market', 'post-market'])]
+    d = d[d['close_adj_lag1'] > 0].copy()
+    d['retorno_3r'] = (d['close_adj_lead3'] / d['close_adj_lag1'] - 1) * 100
+    orden = ['pre-market', 'post-market']
+    colores = alt.Scale(domain=orden, range=['#0f6e74', '#E07A5F'])
+
+    cajas = (alt.Chart(d).mark_boxplot(size=52, extent=1.5, outliers={'size': 14, 'opacity': 0.35})
+             .encode(x=alt.X('report_time:N', sort=orden, title='Hora del reporte'),
+                     y=alt.Y('retorno_3r:Q', title='Retorno a 3 días (%)'),
+                     color=alt.Color('report_time:N', scale=colores, legend=None),
+                     tooltip=[alt.Tooltip('report_time:N', title='Hora'),
+                              alt.Tooltip('retorno_3r:Q', title='Retorno (%)', format='.2f')])
+             .properties(width=300, height=280,
+                         title=alt.TitleParams('Retorno a 3 días', subtitle=f'{len(d):,} balances con hora informada'.replace(',', '.'))))
+
+    sube = (d.assign(sube=(d['retorno_3r'] > 0).astype(float) * 100)
+            .groupby('report_time', as_index=False).agg(pct_sube=('sube', 'mean'), balances=('sube', 'size')))
+    base = alt.Chart(sube).encode(x=alt.X('report_time:N', sort=orden, title='Hora del reporte'))
+    barras = base.mark_bar(size=52).encode(
+        y=alt.Y('pct_sube:Q', title='Reportes en que la acción sube (%)', scale=alt.Scale(domain=[0, 100])),
+        color=alt.Color('report_time:N', scale=colores, legend=None),
+        tooltip=[alt.Tooltip('report_time:N', title='Hora'),
+                 alt.Tooltip('balances:Q', title='Balances', format=','),
+                 alt.Tooltip('pct_sube:Q', title='Sube (%)', format='.1f')])
+    linea = alt.Chart(pd.DataFrame({'y': [50]})).mark_rule(strokeDash=[5, 4], color='#777').encode(y='y:Q')
+    etiquetas = base.mark_text(dy=-8, fontSize=12, color='#14213d').encode(
+        y='pct_sube:Q', text=alt.Text('pct_sube:Q', format='.0f'))
+    porcentaje = (barras + linea + etiquetas).properties(width=300, height=280,
+        title=alt.TitleParams('% de reportes en que sube', subtitle='Línea punteada: 50 %'))
+
+    return alt.hconcat(cajas, porcentaje, spacing=24).properties(
+        title=alt.TitleParams('La hora del reporte y la reacción de la acción',
+                              subtitle='Hipótesis 4 de la EDA: retornos con signo y porcentaje de subas a 3 días.'))
+
+
 # ---------- 3b. El modelo: MAE contra el piso (Entrega 4, celda 11) ----------
 # MAE de la Entrega 3: validación cruzada temporal en train (media ± desvío entre folds) y test (sólo piso y modelo final)
 MAE = pd.DataFrame([
