@@ -179,20 +179,36 @@ def grafico_mae():
                                         'solo para el modelo final y el piso. Línea punteada: piso (predecir siempre la media).']))
 
 
-# ---------- 3c. El modelo: R² de la regresión, antes de la regla de compra ----------
-def grafico_r2(r2):
-    r = r2.copy()
-    r['etiqueta'] = r['r2'].map(lambda v: f'{v:.2f}'.replace('.', ','))
-    base = alt.Chart(r).encode(x=alt.X('periodo:N', sort=r['periodo'].tolist(), title=None, axis=alt.Axis(labelAngle=0)))
-    barras = base.mark_bar(size=46, color=COLOR[ELEGIDO]).encode(
-        y=alt.Y('r2:Q', title='R² (1 = predice perfecto, 0 = igual que el dummy)', scale=alt.Scale(domain=[0, 1])),
-        tooltip=[alt.Tooltip('periodo:N', title='Período'), alt.Tooltip('r2:Q', title='R²', format='.3f'),
-                 alt.Tooltip('balances:Q', title='Balances', format=',')])
-    numeros = base.mark_text(dy=-8, fontSize=13, fontWeight='bold').encode(y='r2:Q', text='etiqueta:N')
-    return (barras + numeros).properties(
+# ---------- 3c. El modelo: R² de cada modelo, antes de la regla de compra ----------
+# Validación cruzada temporal (2021 a 2025), media y desvío entre años. Sale de modelo.r2_modelos().
+R2 = pd.DataFrame([
+    ('Random Forest',     0.0884, 0.0251),
+    ('Gradient Boosting', 0.0855, 0.0202),
+    ('Árbol de decisión', 0.0666, 0.0370),
+    ('Regresión lineal',  0.0515, 0.0311),
+    ('Dummy (media)',    -0.0025, 0.0028),
+], columns=['modelo', 'r2', 'desvio'])
+
+
+def grafico_r2():
+    r = R2.copy()
+    r['etiqueta'] = r['r2'].map(lambda v: f'{v:.2f}'.replace('-0.00', '0.00').replace('.', ',').replace('-', '−'))
+    r['desde'], r['hasta'] = r['r2'] - r['desvio'], r['r2'] + r['desvio']
+    colores = alt.Scale(domain=list(COLOR), range=list(COLOR.values()))
+    y = alt.Y('r2:Q', title='R² (1 = predice perfecto, 0 = igual que el dummy)', scale=alt.Scale(domain=[0, 1], clamp=True))
+    base = alt.Chart(r).encode(x=alt.X('modelo:N', sort=r['modelo'].tolist(), title=None, axis=alt.Axis(labelAngle=0)))
+    barras = base.mark_bar(size=56).encode(
+        y=y, color=alt.Color('modelo:N', scale=colores, legend=None),
+        stroke=alt.condition(alt.datum.modelo == ELEGIDO, alt.value('black'), alt.value('transparent')),
+        strokeWidth=alt.value(2),
+        tooltip=[alt.Tooltip('modelo:N', title='Modelo'), alt.Tooltip('r2:Q', title='R² medio', format='.3f'),
+                 alt.Tooltip('desvio:Q', title='± desvío entre años', format='.3f')])
+    error = base.mark_rule(color='black', strokeWidth=1.5).encode(y=alt.Y('desde:Q', scale=alt.Scale(domain=[0, 1], clamp=True)), y2='hasta:Q')
+    numeros = base.mark_text(dy=-14, fontSize=13, fontWeight='bold').encode(y=alt.Y('hasta:Q', scale=alt.Scale(domain=[0, 1], clamp=True)), text='etiqueta:N')
+    return (barras + error + numeros).properties(
         width=640, height=300,
-        title=alt.TitleParams('Por sí solo, el modelo explica muy poco: entre 5 % y 12 % de cómo se mueve la acción',
-                              subtitle=['R² del Random Forest en cada año de la validación cruzada, en validación (2026 S1) y en test (2026Q3).',
+        title=alt.TitleParams('Ningún modelo explica más del 9 % de cómo se mueve la acción',
+                              subtitle=['R² de cada modelo en la validación cruzada temporal (2021 a 2025). Raya negra: ± desvío entre años.',
                                         'El eje va de 0 a 1 a propósito: el dummy está en 0 y un modelo perfecto llegaría a 1.']))
 
 

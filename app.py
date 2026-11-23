@@ -184,27 +184,21 @@ def cargar_modelo():
 
 @st.cache_data(show_spinner='Calculando la calibración del umbral…')
 def calibracion(_pred):
-    """R² de la regresión y la grilla umbral × presupuesto en validación, para el modelo y el dummy."""
-    from sklearn.metrics import r2_score
+    """La grilla umbral × presupuesto en validación, resumida por umbral, para el modelo y el dummy."""
     _, train, val, _ = m.preparar(df_stocks)
-    oof = _pred[_pred['conjunto'].str.startswith('Entrenamiento')]
-    filas = [(f'VC {a}', grp) for a, grp in oof.groupby(oof['reported_date'].dt.year)]
-    filas += [('Validación 2026 S1', _pred[_pred['conjunto'] == 'Validación']), ('Test 2026Q3', _pred[_pred['conjunto'] == 'Test'])]
-    r2 = pd.DataFrame([{'periodo': p, 'balances': len(x), 'r2': r2_score(x[m.OBJETIVO], x['prediccion'])} for p, x in filas])
-
     v = _pred[_pred['conjunto'] == 'Validación']
     grilla_rf = m.grilla(v['retorno_esperado'].to_numpy(), v['confianza'].to_numpy(),
                          v['open_adj_lead'].to_numpy(), v['retorno_operable'].to_numpy())
     esp_d, prob_d = m.dummy_validacion(train, val)
     grilla_d = m.grilla(esp_d, prob_d, val['open_adj_lead'].to_numpy(), val['retorno_operable'].to_numpy())
     curvas = pd.concat([m.por_umbral(x).assign(modelo=n) for n, x in [(m.ELEGIDO, grilla_rf), ('Dummy (media)', grilla_d)]])
-    return r2, curvas
+    return curvas
 
 
 ART, PRED = cargar_modelo()
 UMBRAL = ART['umbral']
 U_TXT = f'{UMBRAL:g} %'.replace('.', ',')
-R2, CURVAS = calibracion(PRED)
+CURVAS = calibracion(PRED)
 RF = CURVAS[CURVAS['modelo'] == m.ELEGIDO]
 TOP10 = RF[RF['valido']].nlargest(10, 'retorno', keep='first')
 EN_UMBRAL = CURVAS[CURVAS['umbral (%)'] == UMBRAL].set_index('modelo')
@@ -231,13 +225,13 @@ menos se equivoca. Pero la mejora es chica: baja de 5,38 a 5,15 puntos. A partir
 Forest, y lo comparamos siempre contra el dummy.</p>
 <h3 class="sub">Solo, el modelo no es muy bueno</h3>
 <p>El <b>R²</b> mide qué parte del movimiento de la acción explica el modelo: 1 sería predecir todo perfecto y 0 es lo
-mismo que el dummy. El Random Forest no pasa de 0,12: la mayor parte de lo que hace una acción después del balance no
-se puede anticipar con estos datos.</p>
+mismo que el dummy. Lo medimos para los mismos modelos que comparamos con el MAE.</p>
 """)
-grafico(g.grafico_r2(R2))
+grafico(g.grafico_r2())
 html(f"""
-<p class="nota"><b>Qué mirar:</b> todas las barras quedan cerca del piso, y en 2026 (validación y test) son todavía más
-bajas. Si compráramos todas las acciones que el modelo espera que suban (umbral 0 %), ganaríamos en promedio
+<p class="nota"><b>Qué mirar:</b> todas las barras quedan cerca del piso. El orden es el mismo que con el MAE y el
+Random Forest sigue siendo el mejor, pero explica apenas el 9 % de cómo se mueve la acción: la mayor parte de lo que
+pasa después de un balance no se puede anticipar con estos datos. Si compráramos todas las acciones que el modelo espera que suban (umbral 0 %), ganaríamos en promedio
 {num(CURVAS.query("modelo == @m.ELEGIDO and `umbral (%)` == 0")['retorno'].iloc[0])} % del presupuesto en validación. Para
 ganar más hay que calibrar <b>cuándo</b> comprar.</p>
 

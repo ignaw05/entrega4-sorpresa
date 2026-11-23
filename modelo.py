@@ -267,3 +267,36 @@ def entrenar(df_stocks):
     }
     return {'pipe': pipe_final, 'calibrador': calibrador, 'umbral': umbral,
             'predicciones': pred, 'metricas': metricas, 'referencia': referencia}
+
+
+# ---------- Comparación de modelos (sección 4/5 de la Entrega 3), para el gráfico de R² ----------
+def modelos_comparados():
+    """Los cinco modelos de la Entrega 3, con los hiperparámetros elegidos en el ajuste de la sección 5."""
+    from sklearn.dummy import DummyRegressor
+    from sklearn.ensemble import GradientBoostingRegressor
+    from sklearn.linear_model import LinearRegression
+    from sklearn.tree import DecisionTreeRegressor
+    return {
+        'Dummy (media)': DummyRegressor(strategy='mean'),
+        'Regresión lineal': LinearRegression(),
+        'Árbol de decisión': DecisionTreeRegressor(max_depth=5, min_samples_leaf=100, random_state=SEMILLA),
+        'Random Forest': random_forest(),
+        'Gradient Boosting': GradientBoostingRegressor(loss='huber', n_estimators=200, max_depth=3, learning_rate=0.03,
+                                                       subsample=0.8, random_state=SEMILLA),
+    }
+
+
+def r2_modelos(df_stocks):
+    """MAE y R² de cada modelo en la validación cruzada temporal (los mismos 5 años que el resto)."""
+    from sklearn.metrics import r2_score
+    _, train, _, _ = preparar(df_stocks)
+    anios = sorted(train['anio'].unique())[-5:]
+    filas = []
+    for nombre, est in modelos_comparados().items():
+        for a in anios:
+            tr, va = train[train['anio'] < a], train[train['anio'] == a]
+            pred = armar_pipeline(est, NUM_FINAL, CAT_FINAL).fit(tr[COLUMNAS_CRUDAS], tr[OBJETIVO]).predict(va[COLUMNAS_CRUDAS])
+            filas.append({'modelo': nombre, 'anio': a, 'mae': np.mean(np.abs(va[OBJETIVO] - pred)),
+                          'r2': r2_score(va[OBJETIVO], pred)})
+    return (pd.DataFrame(filas).groupby('modelo', sort=False)
+              .agg(mae=('mae', 'mean'), r2=('r2', 'mean'), r2_desvio=('r2', 'std')).reset_index())
