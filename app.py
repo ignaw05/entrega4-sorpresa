@@ -5,6 +5,8 @@ Datos: silver_stocks_2.csv (el Silver del pipeline). Si no está en la carpeta, 
 """
 from pathlib import Path
 
+from html import escape
+
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -304,6 +306,21 @@ def slider_umbral(key):
 
 
 # ---------- 1. Explorá ----------
+# Nombre y logo de cada empresa (los arma empresas.py). Si falta el archivo, se muestra solo el ticker.
+try:
+    EMPRESAS = pd.read_csv(AQUI / 'empresas.csv').set_index('ticker')
+except FileNotFoundError:
+    EMPRESAS = pd.DataFrame(columns=['nombre', 'logo'])
+
+
+def nombre(ticker):
+    return EMPRESAS['nombre'].get(ticker, ticker)
+
+
+def logo(ticker):
+    return EMPRESAS['logo'].get(ticker)
+
+
 @st.cache_data(show_spinner=False)
 def datos_explora():
     t = m.preparar(df_stocks)[3].reset_index(drop=True)       # 2026Q3
@@ -311,7 +328,8 @@ def datos_explora():
     t['fecha'] = t['reported_date'].dt.strftime('%d/%m/%Y')
     t['signo'] = np.where(t['surprise_pct'] < 0, 'Sorpresa negativa', 'Sorpresa positiva')
     t['sector'] = t['sector'].fillna('Sin sector')
-    return t[['id', 'ticker', 'fecha', 'sector', 'industry', 'report_time', 'reported_eps', 'consensus_eps', 'surprise_pct',
+    t['nombre'] = t['ticker'].map(nombre)
+    return t[['id', 'ticker', 'nombre', 'fecha', 'sector', 'industry', 'report_time', 'reported_eps', 'consensus_eps', 'surprise_pct',
               'close_adj_lag1', 'open_adj_lead', 'close_adj_lead3', m.OBJETIVO, 'signo']]
 
 
@@ -337,7 +355,8 @@ with der:
         b = EXPLORA.loc[elegidos[0]['id']]
         html(f"""
         <div class="panel">
-        <p class="panel-tit">{b['ticker']}</p>
+        <div class="panel-cab">{f'<img src="{logo(b["ticker"])}" alt="">' if logo(b['ticker']) else ''}
+        <div><p class="panel-tit">{b['ticker']}</p><p class="panel-nombre">{escape(b['nombre'])}</p></div></div>
         <p class="panel-sub">{b['sector']} · {b['industry']}<br>Balance del {b['fecha']} ({b['report_time']})</p>
         <dl>
         <dt>Ganancia por acción esperada</dt><dd>{num(b['consensus_eps'])} USD</dd>
@@ -380,7 +399,8 @@ if 'p_ticker' not in ss:
     sorpresa_real()
 
 a, b = st.columns(2)
-a.selectbox('Empresa (su último balance)', EJEMPLOS.index.tolist(), key='p_ticker', on_change=sorpresa_real)
+a.selectbox('Empresa (su último balance)', EJEMPLOS.index.tolist(), key='p_ticker', on_change=sorpresa_real,
+            format_func=lambda t: f'{t} · {nombre(t)}')
 with b:
     slider_umbral('u_proba')
 st.slider('Sorpresa (%)', -50.0, 50.0, step=1.0, key='p_sorpresa',
@@ -458,12 +478,15 @@ def simular():
     compras['fecha'] = compras['reported_date'].dt.strftime('%d/%m/%Y')
     compras['confianza_pct'] = compras['confianza'] * 100
     st.altair_chart(g.estilo(g.grafico_simula_compras(compras)), width='content', theme=None)
+    compras['logo'], compras['nombre'] = compras['ticker'].map(logo), compras['ticker'].map(nombre)
     tabla = compras.sort_values('ganancia', ascending=False)[
-        ['ticker', 'fecha', 'sector', 'acciones', 'open_adj_lead', 'pago', 'ganancia', 'retorno_operable', 'retorno_esperado', 'confianza_pct']]
-    tabla.columns = ['Ticker', 'Fecha del balance', 'Sector', 'Acciones', 'Precio de compra (USD)', 'Pagó (USD)',
-                     'Ganancia (USD)', 'Retorno real (%)', 'Retorno esperado (%)', 'Confianza (%)']
-    fmt2 = {c: st.column_config.NumberColumn(format='%.2f') for c in tabla.columns[4:]}
-    st.dataframe(tabla, hide_index=True, column_config=fmt2)
+        ['logo', 'ticker', 'nombre', 'fecha', 'sector', 'acciones', 'open_adj_lead', 'pago', 'ganancia', 'retorno_operable',
+         'retorno_esperado', 'confianza_pct']]
+    tabla.columns = ['Logo', 'Ticker', 'Empresa', 'Fecha del balance', 'Sector', 'Acciones', 'Precio de compra (USD)',
+                     'Pagó (USD)', 'Ganancia (USD)', 'Retorno real (%)', 'Retorno esperado (%)', 'Confianza (%)']
+    config = {c: st.column_config.NumberColumn(format='%.2f') for c in tabla.columns[6:]}
+    config['Logo'] = st.column_config.ImageColumn('', width='small')
+    st.dataframe(tabla, hide_index=True, column_config=config)
 
 
 simular()

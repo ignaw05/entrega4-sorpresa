@@ -1,0 +1,586 @@
+ticker,nombre,logo
+A,"Agilent Technologies, Inc.",https://financialmodelingprep.com/image-stock/A.png
+AA,Alcoa Corporation,https://financialmodelingprep.com/image-stock/AA.png
+AAON,"AAON, Inc.",https://financialmodelingprep.com/image-stock/AAON.png
+AAPL,Apple Inc.,https://financialmodelingprep.com/image-stock/AAPL.png
+ABBV,AbbVie Inc.,https://financialmodelingprep.com/image-stock/ABBV.png
+ABT,Abbott Laboratories,https://financialmodelingprep.com/image-stock/ABT.png
+ACI,"Albertsons Companies, Inc.",https://financialmodelingprep.com/image-stock/ACI.png
+ACM,AECOM,https://financialmodelingprep.com/image-stock/ACM.png
+ACN,Accenture plc,https://financialmodelingprep.com/image-stock/ACN.png
+ADI,"Analog Devices, Inc.",https://financialmodelingprep.com/image-stock/ADI.png
+ADM,Archer-Daniels-Midland Company,https://financialmodelingprep.com/image-stock/ADM.png
+ADP,"Automatic Data Processing, Inc.",https://financialmodelingprep.com/image-stock/ADP.png
+AEE,Ameren Corporation,https://financialmodelingprep.com/image-stock/AEE.png
+AEIS,"Advanced Energy Industries, Inc.",https://financialmodelingprep.com/image-stock/AEIS.png
+AEP,"American Electric Power Company, Inc.",https://financialmodelingprep.com/image-stock/AEP.png
+AES,The AES Corporation,https://financialmodelingprep.com/image-stock/AES.png
+AGCO,AGCO Corporation,https://financialmodelingprep.com/image-stock/AGCO.png
+AHR,"American Healthcare REIT, Inc.",https://financialmodelingprep.com/image-stock/AHR.png
+AIT,"Applied Industrial Technologies, Inc.",https://financialmodelingprep.com/image-stock/AIT.png
+AJG,Arthur J. Gallagher & Co.,https://financialmodelingprep.com/image-stock/AJG.png
+ALB,Albemarle Corporation,https://financialmodelingprep.com/image-stock/ALB.png
+ALGM,"Allegro MicroSystems, Inc.",https://financialmodelingprep.com/image-stock/ALGM.png
+ALK,"Alaska Air Group, Inc.",https://financialmodelingprep.com/image-stock/ALK.png
+ALLE,Allegion plc,https://financialmodelingprep.com/image-stock/ALLE.png
+ALSN,"Allison Transmission Holdings, Inc.",https://financialmodelingprep.com/image-stock/ALSN.png
+ALV,"Autoliv, Inc.",https://financialmodelingprep.com/image-stock/ALV.png
+AM,Antero Midstream Corporation,https://financialmodelingprep.com/image-stock/AM.png
+AMAT,"Applied Materials, Inc.",https://financialmodelingprep.com/image-stock/AMAT.png
+AMCR,Amcor plc,https://financialmodelingprep.com/image-stock/AMCR.png
+AME,"AMETEK, Inc.",https://financialmodelingprep.com/image-stock/AME.png
+AMG,"Affiliated Managers Group, Inc.",https://financialmodelingprep.com/image-stock/AMG.png
+AMGN,Amgen Inc.,https://financialmodelingprep.com/image-stock/AMGN.png
+AMH,American Homes 4 Rent,https://financialmodelingprep.com/image-stock/AMH.png
+AMKR,"Amkor Technology, Inc.",https://financialmodelingprep.com/image-stock/AMKR.png
+AMT,American Tower Corporation,https://financialmodelingprep.com/image-stock/AMT.png
+ANF,Abercrombie & Fitch Co.,https://financialmodelingprep.com/image-stock/ANF.png
+AON,Aon plc,https://financialmodelingprep.com/image-stock/AON.png
+AOS,A. O. Smith Corporation,https://financialmodelingprep.com/image-stock/AOS.png
+APA,APA Corporation,https://financialmodelingprep.com/image-stock/APA.png
+APD,"Air Products and Chemicals, Inc.",https://financialmodelingprep.com/image-stock/APD.png
+APH,Amphenol Corporation,https://financialmodelingprep.com/image-stock/APH.png
+APTV,Aptiv PLC,https://financialmodelingprep.com/image-stock/APTV.png
+ARES,Ares Management Corporation,https://financialmodelingprep.com/image-stock/ARES.png
+ARMK,Aramark,https://financialmodelingprep.com/image-stock/ARMK.png
+ASH,Ashland Inc.,https://financialmodelingprep.com/image-stock/ASH.png
+ATO,Atmos Energy Corporation,https://financialmodelingprep.com/image-stock/ATO.png
+ATR,"AptarGroup, Inc.",https://financialmodelingprep.com/image-stock/ATR.png
+AVGO,Broadcom Inc.,https://financialmodelingprep.com/image-stock/AVGO.png
+AVNT,Avient Corporation,https://financialmodelingprep.com/image-stock/AVNT.png
+AVT,"Avnet, Inc.",https://financialmodelingprep.com/image-stock/AVT.png
+AVTR,"Avantor, Inc.",https://financialmodelingprep.com/image-stock/AVTR.png
+AVY,Avery Dennison Corporation,https://financialmodelingprep.com/image-stock/AVY.png
+AWK,"American Water Works Company, Inc.",https://financialmodelingprep.com/image-stock/AWK.png
+AXTA,Axalta Coating Systems Ltd.,https://financialmodelingprep.com/image-stock/AXTA.png
+AYI,Acuity Inc.,https://financialmodelingprep.com/image-stock/AYI.png
+BA,The Boeing Company,https://financialmodelingprep.com/image-stock/BA.png
+BAH,Booz Allen Hamilton Holding Corporation,https://financialmodelingprep.com/image-stock/BAH.png
+BALL,Ball Corporation,https://financialmodelingprep.com/image-stock/BALL.png
+BAX,Baxter International Inc.,https://financialmodelingprep.com/image-stock/BAX.png
+BBWI,"Bath & Body Works, Inc.",https://financialmodelingprep.com/image-stock/BBWI.png
+BBY,"Best Buy Co., Inc.",https://financialmodelingprep.com/image-stock/BBY.png
+BC,Brunswick Corporation,https://financialmodelingprep.com/image-stock/BC.png
+BCO,The Brink's Company,https://financialmodelingprep.com/image-stock/BCO.png
+BDC,Belden Inc.,https://financialmodelingprep.com/image-stock/BDC.png
+BDX,"Becton, Dickinson and Company",https://financialmodelingprep.com/image-stock/BDX.png
+BE,Bloom Energy Corporation,https://financialmodelingprep.com/image-stock/BE.png
+BEN,Franklin Templeton Inc.,https://financialmodelingprep.com/image-stock/BEN.png
+BF-B,Brown-Forman Corporation,https://financialmodelingprep.com/image-stock/BF-B.png
+BG,Bunge Global SA,https://financialmodelingprep.com/image-stock/BG.png
+BJ,"BJ's Wholesale Club Holdings, Inc.",https://financialmodelingprep.com/image-stock/BJ.png
+BKH,Black Hills Corp,https://financialmodelingprep.com/image-stock/BKH.png
+BKNG,Booking Holdings Inc.,https://financialmodelingprep.com/image-stock/BKNG.png
+BKR,Baker Hughes Company,https://financialmodelingprep.com/image-stock/BKR.png
+BLK,"BlackRock, Inc.",https://financialmodelingprep.com/image-stock/BLK.png
+BMY,Bristol-Myers Squibb Company,https://financialmodelingprep.com/image-stock/BMY.png
+BR,"Broadridge Financial Solutions, Inc.",https://financialmodelingprep.com/image-stock/BR.png
+BRKR,Bruker Corporation,https://financialmodelingprep.com/image-stock/BRKR.png
+BRO,"Brown & Brown, Inc.",https://financialmodelingprep.com/image-stock/BRO.png
+BSY,"Bentley Systems, Incorporated",https://financialmodelingprep.com/image-stock/BSY.png
+BWA,BorgWarner Inc.,https://financialmodelingprep.com/image-stock/BWA.png
+BWXT,"BWX Technologies, Inc.",https://financialmodelingprep.com/image-stock/BWXT.png
+BYD,Boyd Gaming Corporation,https://financialmodelingprep.com/image-stock/BYD.png
+CAH,"Cardinal Health, Inc.",https://financialmodelingprep.com/image-stock/CAH.png
+CALM,"Cal-Maine Foods, Inc.",https://financialmodelingprep.com/image-stock/CALM.png
+CARR,Carrier Global Corporation,https://financialmodelingprep.com/image-stock/CARR.png
+CASY,"Casey's General Stores, Inc.",https://financialmodelingprep.com/image-stock/CASY.png
+CAT,Caterpillar Inc.,https://financialmodelingprep.com/image-stock/CAT.png
+CBOE,"Cboe Global Markets, Inc.",https://financialmodelingprep.com/image-stock/CBOE.png
+CBT,Cabot Corporation,https://financialmodelingprep.com/image-stock/CBT.png
+CCI,Crown Castle Inc.,https://financialmodelingprep.com/image-stock/CCI.png
+CCK,"Crown Holdings, Inc.",https://financialmodelingprep.com/image-stock/CCK.png
+CCL,Carnival Corporation Ltd.,https://financialmodelingprep.com/image-stock/CCL.png
+CDE,"Coeur Mining, Inc.",https://financialmodelingprep.com/image-stock/CDE.png
+CDP,COPT Defense Properties,https://financialmodelingprep.com/image-stock/CDP.png
+CDW,CDW Corporation,https://financialmodelingprep.com/image-stock/CDW.png
+CEG,Constellation Energy Corporation,https://financialmodelingprep.com/image-stock/CEG.png
+CELH,"Celsius Holdings, Inc.",https://financialmodelingprep.com/image-stock/CELH.png
+CF,"CF Industries Holdings, Inc.",https://financialmodelingprep.com/image-stock/CF.png
+CGNX,Cognex Corporation,https://financialmodelingprep.com/image-stock/CGNX.png
+CHD,"Church & Dwight Co., Inc.",https://financialmodelingprep.com/image-stock/CHD.png
+CHDN,Churchill Downs Incorporated,https://financialmodelingprep.com/image-stock/CHDN.png
+CHE,Chemed Corporation,https://financialmodelingprep.com/image-stock/CHE.png
+CHH,"Choice Hotels International, Inc.",https://financialmodelingprep.com/image-stock/CHH.png
+CHRD,Chord Energy Corporation,https://financialmodelingprep.com/image-stock/CHRD.png
+CHRW,"C.H. Robinson Worldwide, Inc.",https://financialmodelingprep.com/image-stock/CHRW.png
+CI,The Cigna Group,https://financialmodelingprep.com/image-stock/CI.png
+CL,Colgate-Palmolive Company,https://financialmodelingprep.com/image-stock/CL.png
+CLF,Cleveland-Cliffs Inc.,https://financialmodelingprep.com/image-stock/CLF.png
+CLX,The Clorox Company,https://financialmodelingprep.com/image-stock/CLX.png
+CMC,Commercial Metals Company,https://financialmodelingprep.com/image-stock/CMC.png
+CMCSA,Comcast Corporation,https://financialmodelingprep.com/image-stock/CMCSA.png
+CME,CME Group Inc.,https://financialmodelingprep.com/image-stock/CME.png
+CMI,Cummins Inc.,https://financialmodelingprep.com/image-stock/CMI.png
+CMS,CMS Energy Corporation,https://financialmodelingprep.com/image-stock/CMS.png
+CNH,CNH Industrial N.V.,https://financialmodelingprep.com/image-stock/CNH.png
+CNP,"CenterPoint Energy, Inc.",https://financialmodelingprep.com/image-stock/CNP.png
+CNX,CNX Resources Corporation,https://financialmodelingprep.com/image-stock/CNX.png
+COHR,Coherent Corp.,https://financialmodelingprep.com/image-stock/COHR.png
+COKE,"Coca-Cola Consolidated, Inc.",https://financialmodelingprep.com/image-stock/COKE.png
+COLM,Columbia Sportswear Company,https://financialmodelingprep.com/image-stock/COLM.png
+COO,"The Cooper Companies, Inc.",https://financialmodelingprep.com/image-stock/COO.png
+COP,ConocoPhillips,https://financialmodelingprep.com/image-stock/COP.png
+COR,"Cencora, Inc.",https://financialmodelingprep.com/image-stock/COR.png
+COST,Costco Wholesale Corporation,https://financialmodelingprep.com/image-stock/COST.png
+CPT,Camden Property Trust,https://financialmodelingprep.com/image-stock/CPT.png
+CR,Crane Company,https://financialmodelingprep.com/image-stock/CR.png
+CRH,CRH plc,https://financialmodelingprep.com/image-stock/CRH.png
+CRM,"Salesforce, Inc.",https://financialmodelingprep.com/image-stock/CRM.png
+CRS,Carpenter Technology Corporation,https://financialmodelingprep.com/image-stock/CRS.png
+CSCO,"Cisco Systems, Inc.",https://financialmodelingprep.com/image-stock/CSCO.png
+CSL,Carlisle Companies Incorporated,https://financialmodelingprep.com/image-stock/CSL.png
+CSX,CSX Corporation,https://financialmodelingprep.com/image-stock/CSX.png
+CTAS,Cintas Corporation,https://financialmodelingprep.com/image-stock/CTAS.png
+CTRE,"CareTrust REIT, Inc.",https://financialmodelingprep.com/image-stock/CTRE.png
+CTSH,Cognizant Technology Solutions Corporation,https://financialmodelingprep.com/image-stock/CTSH.png
+CTVA,"Corteva, Inc.",https://financialmodelingprep.com/image-stock/CTVA.png
+CUBE,CubeSmart,https://financialmodelingprep.com/image-stock/CUBE.png
+CUZ,Cousins Properties Incorporated,https://financialmodelingprep.com/image-stock/CUZ.png
+CVNA,Carvana Co.,https://financialmodelingprep.com/image-stock/CVNA.png
+CVS,CVS Health Corporation,https://financialmodelingprep.com/image-stock/CVS.png
+CVX,Chevron Corporation,https://financialmodelingprep.com/image-stock/CVX.png
+CW,Curtiss-Wright Corporation,https://financialmodelingprep.com/image-stock/CW.png
+CXT,"Crane NXT, Co.",https://financialmodelingprep.com/image-stock/CXT.png
+D,"Dominion Energy, Inc.",https://financialmodelingprep.com/image-stock/D.png
+DCI,"Donaldson Company, Inc.",https://financialmodelingprep.com/image-stock/DCI.png
+DD,"DuPont de Nemours, Inc.",https://financialmodelingprep.com/image-stock/DD.png
+DE,Deere & Company,https://financialmodelingprep.com/image-stock/DE.png
+DELL,Dell Technologies Inc.,https://financialmodelingprep.com/image-stock/DELL.png
+DG,Dollar General Corporation,https://financialmodelingprep.com/image-stock/DG.png
+DGX,Quest Diagnostics Incorporated,https://financialmodelingprep.com/image-stock/DGX.png
+DHI,"D.R. Horton, Inc.",https://financialmodelingprep.com/image-stock/DHI.png
+DHR,Danaher Corporation,https://financialmodelingprep.com/image-stock/DHR.png
+DINO,HF Sinclair Corporation,https://financialmodelingprep.com/image-stock/DINO.png
+DIS,The Walt Disney Company,https://financialmodelingprep.com/image-stock/DIS.png
+DKS,"DICK'S Sporting Goods, Inc.",https://financialmodelingprep.com/image-stock/DKS.png
+DLB,"Dolby Laboratories, Inc.",https://financialmodelingprep.com/image-stock/DLB.png
+DOV,Dover Corporation,https://financialmodelingprep.com/image-stock/DOV.png
+DOW,Dow Inc.,https://financialmodelingprep.com/image-stock/DOW.png
+DPZ,"Domino's Pizza, Inc.",https://financialmodelingprep.com/image-stock/DPZ.png
+DRI,"Darden Restaurants, Inc.",https://financialmodelingprep.com/image-stock/DRI.png
+DTE,DTE Energy Company,https://financialmodelingprep.com/image-stock/DTE.png
+DTM,"DT Midstream, Inc.",https://financialmodelingprep.com/image-stock/DTM.png
+DUK,Duke Energy Corporation,https://financialmodelingprep.com/image-stock/DUK.png
+DVN,Devon Energy Corporation,https://financialmodelingprep.com/image-stock/DVN.png
+EBAY,eBay Inc.,https://financialmodelingprep.com/image-stock/EBAY.png
+ECL,Ecolab Inc.,https://financialmodelingprep.com/image-stock/ECL.png
+ED,"Consolidated Edison, Inc.",https://financialmodelingprep.com/image-stock/ED.png
+EFX,Equifax Inc.,https://financialmodelingprep.com/image-stock/EFX.png
+EHC,Encompass Health Corporation,https://financialmodelingprep.com/image-stock/EHC.png
+EIX,Edison International,https://financialmodelingprep.com/image-stock/EIX.png
+EL,The Estée Lauder Companies Inc.,https://financialmodelingprep.com/image-stock/EL.png
+ELS,"Equity LifeStyle Properties, Inc.",https://financialmodelingprep.com/image-stock/ELS.png
+ELV,"Elevance Health, Inc.",https://financialmodelingprep.com/image-stock/ELV.png
+EME,"EMCOR Group, Inc.",https://financialmodelingprep.com/image-stock/EME.png
+EMR,Emerson Electric Co.,https://financialmodelingprep.com/image-stock/EMR.png
+ENS,EnerSys,https://financialmodelingprep.com/image-stock/ENS.png
+ENSG,"The Ensign Group, Inc.",https://financialmodelingprep.com/image-stock/ENSG.png
+ENTG,"Entegris, Inc.",https://financialmodelingprep.com/image-stock/ENTG.png
+EOG,"EOG Resources, Inc.",https://financialmodelingprep.com/image-stock/EOG.png
+EQIX,"Equinix, Inc.",https://financialmodelingprep.com/image-stock/EQIX.png
+EQT,EQT Corporation,https://financialmodelingprep.com/image-stock/EQT.png
+ES,Eversource Energy,https://financialmodelingprep.com/image-stock/ES.png
+ESAB,ESAB Corporation,https://financialmodelingprep.com/image-stock/ESAB.png
+ESS,"Essex Property Trust, Inc.",https://financialmodelingprep.com/image-stock/ESS.png
+ETN,Eaton Corporation plc,https://financialmodelingprep.com/image-stock/ETN.png
+ETR,Entergy Corporation,https://financialmodelingprep.com/image-stock/ETR.png
+EVRG,"Evergy, Inc.",https://financialmodelingprep.com/image-stock/EVRG.png
+EXC,Exelon Corporation,https://financialmodelingprep.com/image-stock/EXC.png
+EXE,Expand Energy Corporation,https://financialmodelingprep.com/image-stock/EXE.png
+EXP,Eagle Materials Inc.,https://financialmodelingprep.com/image-stock/EXP.png
+EXPD,"Expeditors International of Washington, Inc.",https://financialmodelingprep.com/image-stock/EXPD.png
+EXPE,"Expedia Group, Inc.",https://financialmodelingprep.com/image-stock/EXPE.png
+EXPO,"Exponent, Inc.",https://financialmodelingprep.com/image-stock/EXPO.png
+EXR,Extra Space Storage Inc.,https://financialmodelingprep.com/image-stock/EXR.png
+F,Ford Motor Company,https://financialmodelingprep.com/image-stock/F.png
+FANG,"Diamondback Energy, Inc.",https://financialmodelingprep.com/image-stock/FANG.png
+FAST,Fastenal Company,https://financialmodelingprep.com/image-stock/FAST.png
+FBIN,"Fortune Brands Innovations, Inc.",https://financialmodelingprep.com/image-stock/FBIN.png
+FCFS,"FirstCash Holdings, Inc.",https://financialmodelingprep.com/image-stock/FCFS.png
+FCX,Freeport-McMoRan Inc.,https://financialmodelingprep.com/image-stock/FCX.png
+FDS,FactSet Research Systems Inc.,https://financialmodelingprep.com/image-stock/FDS.png
+FDX,FedEx Corporation,https://financialmodelingprep.com/image-stock/FDX.png
+FE,FirstEnergy Corp.,https://financialmodelingprep.com/image-stock/FE.png
+FERG,Ferguson Enterprises Inc.,https://financialmodelingprep.com/image-stock/FERG.png
+FHI,"Federated Hermes, Inc.",https://financialmodelingprep.com/image-stock/FHI.png
+FICO,Fair Isaac Corporation,https://financialmodelingprep.com/image-stock/FICO.png
+FIS,"Fidelity National Information Services, Inc.",https://financialmodelingprep.com/image-stock/FIS.png
+FIX,"Comfort Systems USA, Inc.",https://financialmodelingprep.com/image-stock/FIX.png
+FLR,Fluor Corporation,https://financialmodelingprep.com/image-stock/FLR.png
+FLS,Flowserve Corporation,https://financialmodelingprep.com/image-stock/FLS.png
+FOUR,"Shift4 Payments, Inc.",https://financialmodelingprep.com/image-stock/FOUR.png
+FOX,Fox Corporation,https://financialmodelingprep.com/image-stock/FOX.png
+FOXA,Fox Corporation,https://financialmodelingprep.com/image-stock/FOXA.png
+FRT,Federal Realty Investment Trust,https://financialmodelingprep.com/image-stock/FRT.png
+FTI,TechnipFMC plc,https://financialmodelingprep.com/image-stock/FTI.png
+FTV,Fortive Corporation,https://financialmodelingprep.com/image-stock/FTV.png
+G,Genpact Limited,https://financialmodelingprep.com/image-stock/G.png
+GAP,"The Gap, Inc.",https://financialmodelingprep.com/image-stock/GAP.png
+GD,General Dynamics Corporation,https://financialmodelingprep.com/image-stock/GD.png
+GDDY,GoDaddy Inc.,https://financialmodelingprep.com/image-stock/GDDY.png
+GE,GE Aerospace,https://financialmodelingprep.com/image-stock/GE.png
+GEF,"Greif, Inc.",https://financialmodelingprep.com/image-stock/GEF.png
+GEHC,GE HealthCare Technologies Inc.,https://financialmodelingprep.com/image-stock/GEHC.png
+GEN,Gen Digital Inc.,https://financialmodelingprep.com/image-stock/GEN.png
+GEV,GE Vernova Inc.,https://financialmodelingprep.com/image-stock/GEV.png
+GGG,Graco Inc.,https://financialmodelingprep.com/image-stock/GGG.png
+GHC,Graham Holdings Company,https://financialmodelingprep.com/image-stock/GHC.png
+GILD,"Gilead Sciences, Inc.",https://financialmodelingprep.com/image-stock/GILD.png
+GIS,"General Mills, Inc.",https://financialmodelingprep.com/image-stock/GIS.png
+GLPI,"Gaming and Leisure Properties, Inc.",https://financialmodelingprep.com/image-stock/GLPI.png
+GLW,Corning Incorporated,https://financialmodelingprep.com/image-stock/GLW.png
+GM,General Motors Company,https://financialmodelingprep.com/image-stock/GM.png
+GME,GameStop Corp.,https://financialmodelingprep.com/image-stock/GME.png
+GNRC,Generac Holdings Inc.,https://financialmodelingprep.com/image-stock/GNRC.png
+GNTX,Gentex Corporation,https://financialmodelingprep.com/image-stock/GNTX.png
+GOOG,Alphabet Inc.,https://financialmodelingprep.com/image-stock/GOOG.png
+GOOGL,Alphabet Inc.,https://financialmodelingprep.com/image-stock/GOOGL.png
+GPC,Genuine Parts Company,https://financialmodelingprep.com/image-stock/GPC.png
+GPK,Graphic Packaging Holding Company,https://financialmodelingprep.com/image-stock/GPK.png
+GPN,Global Payments Inc.,https://financialmodelingprep.com/image-stock/GPN.png
+GRMN,Garmin Ltd.,https://financialmodelingprep.com/image-stock/GRMN.png
+GWW,"W.W. Grainger, Inc.",https://financialmodelingprep.com/image-stock/GWW.png
+H,Hyatt Hotels Corporation,https://financialmodelingprep.com/image-stock/H.png
+HAL,Halliburton Company,https://financialmodelingprep.com/image-stock/HAL.png
+HAS,"Hasbro, Inc.",https://financialmodelingprep.com/image-stock/HAS.png
+HCA,"HCA Healthcare, Inc.",https://financialmodelingprep.com/image-stock/HCA.png
+HD,"The Home Depot, Inc.",https://financialmodelingprep.com/image-stock/HD.png
+HII,"Huntington Ingalls Industries, Inc.",https://financialmodelingprep.com/image-stock/HII.png
+HL,Hecla Mining Company,https://financialmodelingprep.com/image-stock/HL.png
+HLI,"Houlihan Lokey, Inc.",https://financialmodelingprep.com/image-stock/HLI.png
+HLNE,Hamilton Lane Incorporated,https://financialmodelingprep.com/image-stock/HLNE.png
+HLT,Hilton Worldwide Holdings Inc.,https://financialmodelingprep.com/image-stock/HLT.png
+HOG,"Harley-Davidson, Inc.",https://financialmodelingprep.com/image-stock/HOG.png
+HON,Honeywell International Inc.,https://financialmodelingprep.com/image-stock/HON.png
+HPE,Hewlett Packard Enterprise Company,https://financialmodelingprep.com/image-stock/HPE.png
+HPQ,HP Inc.,https://financialmodelingprep.com/image-stock/HPQ.png
+HR,Healthcare Realty Trust Incorporated,https://financialmodelingprep.com/image-stock/HR.png
+HRB,"H&R Block, Inc.",https://financialmodelingprep.com/image-stock/HRB.png
+HRL,Hormel Foods Corporation,https://financialmodelingprep.com/image-stock/HRL.png
+HST,"Host Hotels & Resorts, Inc.",https://financialmodelingprep.com/image-stock/HST.png
+HSY,The Hershey Company,https://financialmodelingprep.com/image-stock/HSY.png
+HUBB,Hubbell Incorporated,https://financialmodelingprep.com/image-stock/HUBB.png
+HUM,Humana Inc.,https://financialmodelingprep.com/image-stock/HUM.png
+HUN,Huntsman Corporation,https://financialmodelingprep.com/image-stock/HUN.png
+HWM,Howmet Aerospace Inc.,https://financialmodelingprep.com/image-stock/HWM.png
+HXL,Hexcel Corporation,https://financialmodelingprep.com/image-stock/HXL.png
+IBKR,"Interactive Brokers Group, Inc.",https://financialmodelingprep.com/image-stock/IBKR.png
+IBM,International Business Machines Corporation,https://financialmodelingprep.com/image-stock/IBM.png
+ICE,"Intercontinental Exchange, Inc.",https://financialmodelingprep.com/image-stock/ICE.png
+IDA,"IDACORP, Inc.",https://financialmodelingprep.com/image-stock/IDA.png
+IDCC,"InterDigital, Inc.",https://financialmodelingprep.com/image-stock/IDCC.png
+IEX,IDEX Corporation,https://financialmodelingprep.com/image-stock/IEX.png
+IFF,International Flavors & Fragrances Inc.,https://financialmodelingprep.com/image-stock/IFF.png
+INGR,Ingredion Incorporated,https://financialmodelingprep.com/image-stock/INGR.png
+INTC,Intel Corporation,https://financialmodelingprep.com/image-stock/INTC.png
+INTU,Intuit Inc.,https://financialmodelingprep.com/image-stock/INTU.png
+INVH,Invitation Homes Inc.,https://financialmodelingprep.com/image-stock/INVH.png
+IP,International Paper Company,https://financialmodelingprep.com/image-stock/IP.png
+IPGP,IPG Photonics Corporation,https://financialmodelingprep.com/image-stock/IPGP.png
+IR,Ingersoll Rand Inc.,https://financialmodelingprep.com/image-stock/IR.png
+IRM,Iron Mountain Incorporated,https://financialmodelingprep.com/image-stock/IRM.png
+IRT,"Independence Realty Trust, Inc.",https://financialmodelingprep.com/image-stock/IRT.png
+ITT,ITT Inc.,https://financialmodelingprep.com/image-stock/ITT.png
+ITW,Illinois Tool Works Inc.,https://financialmodelingprep.com/image-stock/ITW.png
+IVZ,Invesco Ltd.,https://financialmodelingprep.com/image-stock/IVZ.png
+J,Jacobs Solutions Inc.,https://financialmodelingprep.com/image-stock/J.png
+JBHT,"J.B. Hunt Transport Services, Inc.",https://financialmodelingprep.com/image-stock/JBHT.png
+JBL,Jabil Inc.,https://financialmodelingprep.com/image-stock/JBL.png
+JCI,Johnson Controls International plc,https://financialmodelingprep.com/image-stock/JCI.png
+JEF,Jefferies Financial Group Inc.,https://financialmodelingprep.com/image-stock/JEF.png
+JKHY,"Jack Henry & Associates, Inc.",https://financialmodelingprep.com/image-stock/JKHY.png
+JLL,Jones Lang LaSalle Incorporated,https://financialmodelingprep.com/image-stock/JLL.png
+JNJ,Johnson & Johnson,https://financialmodelingprep.com/image-stock/JNJ.png
+KBH,KB Home,https://financialmodelingprep.com/image-stock/KBH.png
+KBR,"KBR, Inc.",https://financialmodelingprep.com/image-stock/KBR.png
+KDP,Keurig Dr Pepper Inc.,https://financialmodelingprep.com/image-stock/KDP.png
+KHC,The Kraft Heinz Company,https://financialmodelingprep.com/image-stock/KHC.png
+KKR,KKR & Co. Inc.,https://financialmodelingprep.com/image-stock/KKR.png
+KLAC,KLA Corporation,https://financialmodelingprep.com/image-stock/KLAC.png
+KMB,Kimberly-Clark Corporation,https://financialmodelingprep.com/image-stock/KMB.png
+KMI,"Kinder Morgan, Inc.",https://financialmodelingprep.com/image-stock/KMI.png
+KNX,Knight-Swift Transportation Holdings Inc.,https://financialmodelingprep.com/image-stock/KNX.png
+KO,The Coca-Cola Company,https://financialmodelingprep.com/image-stock/KO.png
+KR,The Kroger Co.,https://financialmodelingprep.com/image-stock/KR.png
+KRC,Kilroy Realty Corporation,https://financialmodelingprep.com/image-stock/KRC.png
+KRG,Kite Realty Group Trust,https://financialmodelingprep.com/image-stock/KRG.png
+KVUE,Kenvue Inc,https://financialmodelingprep.com/image-stock/KVUE.png
+LAD,"Lithia Motors, Inc.",https://financialmodelingprep.com/image-stock/LAD.png
+LAMR,Lamar Advertising Company,https://financialmodelingprep.com/image-stock/LAMR.png
+LDOS,"Leidos Holdings, Inc.",https://financialmodelingprep.com/image-stock/LDOS.png
+LEA,Lear Corporation,https://financialmodelingprep.com/image-stock/LEA.png
+LECO,"Lincoln Electric Holdings, Inc.",https://financialmodelingprep.com/image-stock/LECO.png
+LEN,Lennar Corporation,https://financialmodelingprep.com/image-stock/LEN.png
+LFUS,"Littelfuse, Inc.",https://financialmodelingprep.com/image-stock/LFUS.png
+LH,Labcorp Holdings Inc.,https://financialmodelingprep.com/image-stock/LH.png
+LHX,"L3Harris Technologies, Inc.",https://financialmodelingprep.com/image-stock/LHX.png
+LII,Lennox International Inc.,https://financialmodelingprep.com/image-stock/LII.png
+LIN,Linde plc,https://financialmodelingprep.com/image-stock/LIN.png
+LLY,Eli Lilly and Company,https://financialmodelingprep.com/image-stock/LLY.png
+LMT,Lockheed Martin Corporation,https://financialmodelingprep.com/image-stock/LMT.png
+LNT,Alliant Energy Corporation,https://financialmodelingprep.com/image-stock/LNT.png
+LOW,"Lowe's Companies, Inc.",https://financialmodelingprep.com/image-stock/LOW.png
+LPX,Louisiana-Pacific Corporation,https://financialmodelingprep.com/image-stock/LPX.png
+LRCX,Lam Research Corporation,https://financialmodelingprep.com/image-stock/LRCX.png
+LSTR,"Landstar System, Inc.",https://financialmodelingprep.com/image-stock/LSTR.png
+LUV,Southwest Airlines Co.,https://financialmodelingprep.com/image-stock/LUV.png
+LVS,Las Vegas Sands Corp.,https://financialmodelingprep.com/image-stock/LVS.png
+LYB,LyondellBasell Industries N.V.,https://financialmodelingprep.com/image-stock/LYB.png
+M,"Macy's, Inc.",https://financialmodelingprep.com/image-stock/M.png
+MA,Mastercard Incorporated,https://financialmodelingprep.com/image-stock/MA.png
+MAA,"Mid-America Apartment Communities, Inc.",https://financialmodelingprep.com/image-stock/MAA.png
+MAR,"Marriott International, Inc.",https://financialmodelingprep.com/image-stock/MAR.png
+MAS,Masco Corporation,https://financialmodelingprep.com/image-stock/MAS.png
+MAT,"Mattel, Inc.",https://financialmodelingprep.com/image-stock/MAT.png
+MCD,McDonald's Corporation,https://financialmodelingprep.com/image-stock/MCD.png
+MCHP,Microchip Technology Incorporated,https://financialmodelingprep.com/image-stock/MCHP.png
+MCK,McKesson Corporation,https://financialmodelingprep.com/image-stock/MCK.png
+MCO,Moody's Corporation,https://financialmodelingprep.com/image-stock/MCO.png
+MDLZ,"Mondelez International, Inc.",https://financialmodelingprep.com/image-stock/MDLZ.png
+MDT,Medtronic plc,https://financialmodelingprep.com/image-stock/MDT.png
+META,"Meta Platforms, Inc.",https://financialmodelingprep.com/image-stock/META.png
+MGM,MGM Resorts International,https://financialmodelingprep.com/image-stock/MGM.png
+MKC,"McCormick & Company, Incorporated",https://financialmodelingprep.com/image-stock/MKC.png
+MKSI,MKS Inc.,https://financialmodelingprep.com/image-stock/MKSI.png
+MLI,"Mueller Industries, Inc.",https://financialmodelingprep.com/image-stock/MLI.png
+MLM,"Martin Marietta Materials, Inc.",https://financialmodelingprep.com/image-stock/MLM.png
+MMM,3M Company,https://financialmodelingprep.com/image-stock/MMM.png
+MMS,"Maximus, Inc.",https://financialmodelingprep.com/image-stock/MMS.png
+MO,"Altria Group, Inc.",https://financialmodelingprep.com/image-stock/MO.png
+MOG-A,Moog Inc.,https://financialmodelingprep.com/image-stock/MOG-A.png
+MORN,"Morningstar, Inc.",https://financialmodelingprep.com/image-stock/MORN.png
+MOS,The Mosaic Company,https://financialmodelingprep.com/image-stock/MOS.png
+MPC,Marathon Petroleum Corporation,https://financialmodelingprep.com/image-stock/MPC.png
+MPWR,"Monolithic Power Systems, Inc.",https://financialmodelingprep.com/image-stock/MPWR.png
+MRK,"Merck & Co., Inc.",https://financialmodelingprep.com/image-stock/MRK.png
+MRSH,"Marsh & McLennan Companies, Inc.",https://financialmodelingprep.com/image-stock/MRSH.png
+MRVL,"Marvell Technology, Inc.",https://financialmodelingprep.com/image-stock/MRVL.png
+MSA,MSA Safety Incorporated,https://financialmodelingprep.com/image-stock/MSA.png
+MSCI,MSCI Inc.,https://financialmodelingprep.com/image-stock/MSCI.png
+MSFT,Microsoft Corporation,https://financialmodelingprep.com/image-stock/MSFT.png
+MSI,"Motorola Solutions, Inc.",https://financialmodelingprep.com/image-stock/MSI.png
+MSM,"MSC Industrial Direct Co., Inc.",https://financialmodelingprep.com/image-stock/MSM.png
+MTDR,Matador Resources Company,https://financialmodelingprep.com/image-stock/MTDR.png
+MTN,"Vail Resorts, Inc.",https://financialmodelingprep.com/image-stock/MTN.png
+MU,"Micron Technology, Inc.",https://financialmodelingprep.com/image-stock/MU.png
+MUR,Murphy Oil Corporation,https://financialmodelingprep.com/image-stock/MUR.png
+MUSA,Murphy USA Inc.,https://financialmodelingprep.com/image-stock/MUSA.png
+MZTI,The Marzetti Company,https://financialmodelingprep.com/image-stock/MZTI.png
+NDAQ,"Nasdaq, Inc.",https://financialmodelingprep.com/image-stock/NDAQ.png
+NDSN,Nordson Corporation,https://financialmodelingprep.com/image-stock/NDSN.png
+NEE,"NextEra Energy, Inc.",https://financialmodelingprep.com/image-stock/NEE.png
+NEM,Newmont Corporation,https://financialmodelingprep.com/image-stock/NEM.png
+NEU,NewMarket Corporation,https://financialmodelingprep.com/image-stock/NEU.png
+NFG,National Fuel Gas Company,https://financialmodelingprep.com/image-stock/NFG.png
+NI,NiSource Inc.,https://financialmodelingprep.com/image-stock/NI.png
+NJR,New Jersey Resources Corporation,https://financialmodelingprep.com/image-stock/NJR.png
+NKE,"NIKE, Inc.",https://financialmodelingprep.com/image-stock/NKE.png
+NOC,Northrop Grumman Corporation,https://financialmodelingprep.com/image-stock/NOC.png
+NOV,NOV Inc.,https://financialmodelingprep.com/image-stock/NOV.png
+NRG,"NRG Energy, Inc.",https://financialmodelingprep.com/image-stock/NRG.png
+NSC,Norfolk Southern Corporation,https://financialmodelingprep.com/image-stock/NSC.png
+NTAP,"NetApp, Inc.",https://financialmodelingprep.com/image-stock/NTAP.png
+NUE,Nucor Corporation,https://financialmodelingprep.com/image-stock/NUE.png
+NVDA,NVIDIA Corporation,https://financialmodelingprep.com/image-stock/NVDA.png
+NVT,nVent Electric plc,https://financialmodelingprep.com/image-stock/NVT.png
+NWE,NorthWestern Energy Group Inc,https://financialmodelingprep.com/image-stock/NWE.png
+NWS,News Corporation,https://financialmodelingprep.com/image-stock/NWS.png
+NWSA,News Corporation,https://financialmodelingprep.com/image-stock/NWSA.png
+NXPI,NXP Semiconductors N.V.,https://financialmodelingprep.com/image-stock/NXPI.png
+NXST,"Nexstar Media Group, Inc.",https://financialmodelingprep.com/image-stock/NXST.png
+NYT,The New York Times Company,https://financialmodelingprep.com/image-stock/NYT.png
+OC,Owens Corning,https://financialmodelingprep.com/image-stock/OC.png
+ODFL,"Old Dominion Freight Line, Inc.",https://financialmodelingprep.com/image-stock/ODFL.png
+OGE,OGE Energy Corp.,https://financialmodelingprep.com/image-stock/OGE.png
+OGS,"ONE Gas, Inc.",https://financialmodelingprep.com/image-stock/OGS.png
+OKE,"ONEOK, Inc.",https://financialmodelingprep.com/image-stock/OKE.png
+OLED,Universal Display Corporation,https://financialmodelingprep.com/image-stock/OLED.png
+OLN,Olin Corporation,https://financialmodelingprep.com/image-stock/OLN.png
+OMC,Omnicom Group Inc.,https://financialmodelingprep.com/image-stock/OMC.png
+ORA,"Ormat Technologies, Inc.",https://financialmodelingprep.com/image-stock/ORA.png
+ORCL,Oracle Corporation,https://financialmodelingprep.com/image-stock/ORCL.png
+OSK,Oshkosh Corporation,https://financialmodelingprep.com/image-stock/OSK.png
+OTIS,Otis Worldwide Corporation,https://financialmodelingprep.com/image-stock/OTIS.png
+OVV,Ovintiv Inc.,https://financialmodelingprep.com/image-stock/OVV.png
+OXY,Occidental Petroleum Corporation,https://financialmodelingprep.com/image-stock/OXY.png
+PAG,"Penske Automotive Group, Inc.",https://financialmodelingprep.com/image-stock/PAG.png
+PAYX,"Paychex, Inc.",https://financialmodelingprep.com/image-stock/PAYX.png
+PBF,PBF Energy Inc.,https://financialmodelingprep.com/image-stock/PBF.png
+PCAR,PACCAR Inc,https://financialmodelingprep.com/image-stock/PCAR.png
+PCG,PG&E Corporation,https://financialmodelingprep.com/image-stock/PCG.png
+PEG,Public Service Enterprise Group Incorporated,https://financialmodelingprep.com/image-stock/PEG.png
+PEGA,Pegasystems Inc.,https://financialmodelingprep.com/image-stock/PEGA.png
+PEP,"PepsiCo, Inc.",https://financialmodelingprep.com/image-stock/PEP.png
+PFE,Pfizer Inc.,https://financialmodelingprep.com/image-stock/PFE.png
+PG,The Procter & Gamble Company,https://financialmodelingprep.com/image-stock/PG.png
+PH,Parker-Hannifin Corporation,https://financialmodelingprep.com/image-stock/PH.png
+PHM,"PulteGroup, Inc.",https://financialmodelingprep.com/image-stock/PHM.png
+PII,Polaris Inc.,https://financialmodelingprep.com/image-stock/PII.png
+PK,Park Hotels & Resorts Inc.,https://financialmodelingprep.com/image-stock/PK.png
+PKG,Packaging Corporation of America,https://financialmodelingprep.com/image-stock/PKG.png
+PLNT,"Planet Fitness, Inc.",https://financialmodelingprep.com/image-stock/PLNT.png
+PM,Philip Morris International Inc.,https://financialmodelingprep.com/image-stock/PM.png
+PNR,Pentair plc,https://financialmodelingprep.com/image-stock/PNR.png
+PNW,Pinnacle West Capital Corporation,https://financialmodelingprep.com/image-stock/PNW.png
+POR,Portland General Electric Company,https://financialmodelingprep.com/image-stock/POR.png
+PPC,Pilgrim's Pride Corporation,https://financialmodelingprep.com/image-stock/PPC.png
+PPG,"PPG Industries, Inc.",https://financialmodelingprep.com/image-stock/PPG.png
+PPL,PPL Corporation,https://financialmodelingprep.com/image-stock/PPL.png
+PR,Permian Resources Corporation,https://financialmodelingprep.com/image-stock/PR.png
+PSA,Public Storage,https://financialmodelingprep.com/image-stock/PSA.png
+PSKY,Paramount Skydance Corp,https://financialmodelingprep.com/image-stock/PSKY.png
+PSX,Phillips 66,https://financialmodelingprep.com/image-stock/PSX.png
+PVH,PVH Corp.,https://financialmodelingprep.com/image-stock/PVH.png
+PWR,"Quanta Services, Inc.",https://financialmodelingprep.com/image-stock/PWR.png
+PYPL,"PayPal Holdings, Inc.",https://financialmodelingprep.com/image-stock/PYPL.png
+Q,"Qnity Electronics, Inc.",https://financialmodelingprep.com/image-stock/Q.png
+QCOM,QUALCOMM Incorporated,https://financialmodelingprep.com/image-stock/QCOM.png
+R,"Ryder System, Inc.",https://financialmodelingprep.com/image-stock/R.png
+RBA,"RB Global, Inc.",https://financialmodelingprep.com/image-stock/RBA.png
+RBC,RBC Bearings Incorporated,https://financialmodelingprep.com/image-stock/RBC.png
+RCL,Royal Caribbean Cruises Ltd.,https://financialmodelingprep.com/image-stock/RCL.png
+REGN,"Regeneron Pharmaceuticals, Inc.",https://financialmodelingprep.com/image-stock/REGN.png
+REXR,"Rexford Industrial Realty, Inc.",https://financialmodelingprep.com/image-stock/REXR.png
+RGLD,"Royal Gold, Inc.",https://financialmodelingprep.com/image-stock/RGLD.png
+RL,Ralph Lauren Corporation,https://financialmodelingprep.com/image-stock/RL.png
+RMD,ResMed Inc.,https://financialmodelingprep.com/image-stock/RMD.png
+ROK,"Rockwell Automation, Inc.",https://financialmodelingprep.com/image-stock/ROK.png
+ROL,"Rollins, Inc.",https://financialmodelingprep.com/image-stock/ROL.png
+ROP,"Roper Technologies, Inc.",https://financialmodelingprep.com/image-stock/ROP.png
+ROST,"Ross Stores, Inc.",https://financialmodelingprep.com/image-stock/ROST.png
+RPM,RPM International Inc.,https://financialmodelingprep.com/image-stock/RPM.png
+RRC,Range Resources Corporation,https://financialmodelingprep.com/image-stock/RRC.png
+RRX,Regal Rexnord Corporation,https://financialmodelingprep.com/image-stock/RRX.png
+RS,"Reliance, Inc.",https://financialmodelingprep.com/image-stock/RS.png
+RSG,"Republic Services, Inc.",https://financialmodelingprep.com/image-stock/RSG.png
+RTX,RTX Corporation,https://financialmodelingprep.com/image-stock/RTX.png
+RVTY,"Revvity, Inc.",https://financialmodelingprep.com/image-stock/RVTY.png
+RYN,Rayonier Inc.,https://financialmodelingprep.com/image-stock/RYN.png
+SAIC,Science Applications International Corporation,https://financialmodelingprep.com/image-stock/SAIC.png
+SBAC,SBA Communications Corporation,https://financialmodelingprep.com/image-stock/SBAC.png
+SBUX,Starbucks Corporation,https://financialmodelingprep.com/image-stock/SBUX.png
+SCI,Service Corporation International,https://financialmodelingprep.com/image-stock/SCI.png
+SEIC,SEI Investments Company,https://financialmodelingprep.com/image-stock/SEIC.png
+SGI,Somnigroup International Inc.,https://financialmodelingprep.com/image-stock/SGI.png
+SHC,Sotera Health Company,https://financialmodelingprep.com/image-stock/SHC.png
+SHW,The Sherwin-Williams Company,https://financialmodelingprep.com/image-stock/SHW.png
+SIRI,Sirius XM Holdings Inc.,https://financialmodelingprep.com/image-stock/SIRI.png
+SJM,The J. M. Smucker Company,https://financialmodelingprep.com/image-stock/SJM.png
+SLB,SLB N.V.,https://financialmodelingprep.com/image-stock/SLB.png
+SLGN,Silgan Holdings Inc.,https://financialmodelingprep.com/image-stock/SLGN.png
+SMG,The Scotts Miracle-Gro Company,https://financialmodelingprep.com/image-stock/SMG.png
+SN,"SharkNinja, Inc.",https://financialmodelingprep.com/image-stock/SN.png
+SNA,Snap-on Incorporated,https://financialmodelingprep.com/image-stock/SNA.png
+SNX,TD SYNNEX Corporation,https://financialmodelingprep.com/image-stock/SNX.png
+SO,The Southern Company,https://financialmodelingprep.com/image-stock/SO.png
+SOLS,"Solstice Advanced Materials, Inc.",https://financialmodelingprep.com/image-stock/SOLS.png
+SON,Sonoco Products Company,https://financialmodelingprep.com/image-stock/SON.png
+SPG,"Simon Property Group, Inc.",https://financialmodelingprep.com/image-stock/SPG.png
+SPGI,S&P Global Inc.,https://financialmodelingprep.com/image-stock/SPGI.png
+SR,Spire Inc.,https://financialmodelingprep.com/image-stock/SR.png
+SRE,Sempra,https://financialmodelingprep.com/image-stock/SRE.png
+SSD,"Simpson Manufacturing Co., Inc.",https://financialmodelingprep.com/image-stock/SSD.png
+ST,Sensata Technologies Holding plc,https://financialmodelingprep.com/image-stock/ST.png
+STAG,"STAG Industrial, Inc.",https://financialmodelingprep.com/image-stock/STAG.png
+STE,STERIS plc,https://financialmodelingprep.com/image-stock/STE.png
+STLD,"Steel Dynamics, Inc.",https://financialmodelingprep.com/image-stock/STLD.png
+STX,Seagate Technology Holdings plc,https://financialmodelingprep.com/image-stock/STX.png
+STZ,"Constellation Brands, Inc.",https://financialmodelingprep.com/image-stock/STZ.png
+SW,Smurfit Westrock Plc,https://financialmodelingprep.com/image-stock/SW.png
+SWK,"Stanley Black & Decker, Inc.",https://financialmodelingprep.com/image-stock/SWK.png
+SWKS,"Skyworks Solutions, Inc.",https://financialmodelingprep.com/image-stock/SWKS.png
+SWX,"Southwest Gas Holdings, Inc.",https://financialmodelingprep.com/image-stock/SWX.png
+SYK,Stryker Corporation,https://financialmodelingprep.com/image-stock/SYK.png
+SYY,Sysco Corporation,https://financialmodelingprep.com/image-stock/SYY.png
+T,AT&T Inc.,https://financialmodelingprep.com/image-stock/T.png
+TDG,TransDigm Group Incorporated,https://financialmodelingprep.com/image-stock/TDG.png
+TECH,Bio-Techne Corporation,https://financialmodelingprep.com/image-stock/TECH.png
+TEL,TE Connectivity plc,https://financialmodelingprep.com/image-stock/TEL.png
+TER,"Teradyne, Inc.",https://financialmodelingprep.com/image-stock/TER.png
+TEX,Terex Corporation,https://financialmodelingprep.com/image-stock/TEX.png
+TGT,Target Corporation,https://financialmodelingprep.com/image-stock/TGT.png
+THO,"THOR Industries, Inc.",https://financialmodelingprep.com/image-stock/THO.png
+TJX,"The TJX Companies, Inc.",https://financialmodelingprep.com/image-stock/TJX.png
+TKO,"TKO Group Holdings, Inc.",https://financialmodelingprep.com/image-stock/TKO.png
+TKR,The Timken Company,https://financialmodelingprep.com/image-stock/TKR.png
+TMO,Thermo Fisher Scientific Inc.,https://financialmodelingprep.com/image-stock/TMO.png
+TMUS,"T-Mobile US, Inc.",https://financialmodelingprep.com/image-stock/TMUS.png
+TNL,Travel + Leisure Co.,https://financialmodelingprep.com/image-stock/TNL.png
+TOL,"Toll Brothers, Inc.",https://financialmodelingprep.com/image-stock/TOL.png
+TPL,Texas Pacific Land Corporation,https://financialmodelingprep.com/image-stock/TPL.png
+TPR,"Tapestry, Inc.",https://financialmodelingprep.com/image-stock/TPR.png
+TRGP,Targa Resources Corp.,https://financialmodelingprep.com/image-stock/TRGP.png
+TROW,"T. Rowe Price Group, Inc.",https://financialmodelingprep.com/image-stock/TROW.png
+TRU,TransUnion,https://financialmodelingprep.com/image-stock/TRU.png
+TSCO,Tractor Supply Company,https://financialmodelingprep.com/image-stock/TSCO.png
+TSN,"Tyson Foods, Inc.",https://financialmodelingprep.com/image-stock/TSN.png
+TT,Trane Technologies plc,https://financialmodelingprep.com/image-stock/TT.png
+TTC,The Toro Company,https://financialmodelingprep.com/image-stock/TTC.png
+TTEK,"Tetra Tech, Inc.",https://financialmodelingprep.com/image-stock/TTEK.png
+TXN,Texas Instruments Incorporated,https://financialmodelingprep.com/image-stock/TXN.png
+TXNM,"TXNM Energy, Inc.",https://financialmodelingprep.com/image-stock/TXNM.png
+TXRH,"Texas Roadhouse, Inc.",https://financialmodelingprep.com/image-stock/TXRH.png
+TXT,Textron Inc.,https://financialmodelingprep.com/image-stock/TXT.png
+UDR,"UDR, Inc.",https://financialmodelingprep.com/image-stock/UDR.png
+UFPI,"UFP Industries, Inc.",https://financialmodelingprep.com/image-stock/UFPI.png
+UGI,UGI Corporation,https://financialmodelingprep.com/image-stock/UGI.png
+UHS,"Universal Health Services, Inc.",https://financialmodelingprep.com/image-stock/UHS.png
+ULS,UL Solutions Inc.,https://financialmodelingprep.com/image-stock/ULS.png
+UNH,UnitedHealth Group Incorporated,https://financialmodelingprep.com/image-stock/UNH.png
+UNP,Union Pacific Corporation,https://financialmodelingprep.com/image-stock/UNP.png
+UPS,"United Parcel Service, Inc.",https://financialmodelingprep.com/image-stock/UPS.png
+URI,"United Rentals, Inc.",https://financialmodelingprep.com/image-stock/URI.png
+V,Visa Inc.,https://financialmodelingprep.com/image-stock/V.png
+VAL,Valaris Limited,https://financialmodelingprep.com/image-stock/VAL.png
+VC,Visteon Corporation,https://financialmodelingprep.com/image-stock/VC.png
+VFC,V.F. Corporation,https://financialmodelingprep.com/image-stock/VFC.png
+VICI,VICI Properties Inc.,https://financialmodelingprep.com/image-stock/VICI.png
+VLO,Valero Energy Corporation,https://financialmodelingprep.com/image-stock/VLO.png
+VLTO,Veralto Corporation,https://financialmodelingprep.com/image-stock/VLTO.png
+VMC,Vulcan Materials Company,https://financialmodelingprep.com/image-stock/VMC.png
+VMI,"Valmont Industries, Inc.",https://financialmodelingprep.com/image-stock/VMI.png
+VNOM,"Viper Energy, Inc.",https://financialmodelingprep.com/image-stock/VNOM.png
+VNT,Vontier Corporation,https://financialmodelingprep.com/image-stock/VNT.png
+VRSK,"Verisk Analytics, Inc.",https://financialmodelingprep.com/image-stock/VRSK.png
+VRSN,"VeriSign, Inc.",https://financialmodelingprep.com/image-stock/VRSN.png
+VRT,Vertiv Holdings Co,https://financialmodelingprep.com/image-stock/VRT.png
+VST,Vistra Corp.,https://financialmodelingprep.com/image-stock/VST.png
+VTR,"Ventas, Inc.",https://financialmodelingprep.com/image-stock/VTR.png
+VTRS,Viatris Inc.,https://financialmodelingprep.com/image-stock/VTRS.png
+VVV,Valvoline Inc.,https://financialmodelingprep.com/image-stock/VVV.png
+VZ,Verizon Communications Inc.,https://financialmodelingprep.com/image-stock/VZ.png
+WAB,Westinghouse Air Brake Technologies Corporation,https://financialmodelingprep.com/image-stock/WAB.png
+WCC,"WESCO International, Inc.",https://financialmodelingprep.com/image-stock/WCC.png
+WDC,Western Digital Corporation,https://financialmodelingprep.com/image-stock/WDC.png
+WEC,"WEC Energy Group, Inc.",https://financialmodelingprep.com/image-stock/WEC.png
+WELL,Welltower Inc.,https://financialmodelingprep.com/image-stock/WELL.png
+WERN,"Werner Enterprises, Inc.",https://financialmodelingprep.com/image-stock/WERN.png
+WFRD,Weatherford International Corp,https://financialmodelingprep.com/image-stock/WFRD.png
+WH,"Wyndham Hotels & Resorts, Inc.",https://financialmodelingprep.com/image-stock/WH.png
+WHR,Whirlpool Corporation,https://financialmodelingprep.com/image-stock/WHR.png
+WING,Wingstop Inc.,https://financialmodelingprep.com/image-stock/WING.png
+WLK,Westlake Corporation,https://financialmodelingprep.com/image-stock/WLK.png
+WM,"Waste Management, Inc.",https://financialmodelingprep.com/image-stock/WM.png
+WMB,"The Williams Companies, Inc.",https://financialmodelingprep.com/image-stock/WMB.png
+WMG,Warner Music Group Corp.,https://financialmodelingprep.com/image-stock/WMG.png
+WMS,"Advanced Drainage Systems, Inc.",https://financialmodelingprep.com/image-stock/WMS.png
+WMT,Walmart Inc.,https://financialmodelingprep.com/image-stock/WMT.png
+WSM,"Williams-Sonoma, Inc.",https://financialmodelingprep.com/image-stock/WSM.png
+WSO,"Watsco, Inc.",https://financialmodelingprep.com/image-stock/WSO.png
+WST,"West Pharmaceutical Services, Inc.",https://financialmodelingprep.com/image-stock/WST.png
+WTRG,"Essential Utilities, Inc.",https://financialmodelingprep.com/image-stock/WTRG.png
+WTS,"Watts Water Technologies, Inc.",https://financialmodelingprep.com/image-stock/WTS.png
+WTW,Willis Towers Watson Public Limited Company,https://financialmodelingprep.com/image-stock/WTW.png
+WWD,"Woodward, Inc.",https://financialmodelingprep.com/image-stock/WWD.png
+WY,Weyerhaeuser Company,https://financialmodelingprep.com/image-stock/WY.png
+WYNN,"Wynn Resorts, Limited",https://financialmodelingprep.com/image-stock/WYNN.png
+XEL,Xcel Energy Inc.,https://financialmodelingprep.com/image-stock/XEL.png
+XOM,ExxonMobil Holdings Corporation,https://financialmodelingprep.com/image-stock/XOM.png
+XPO,"XPO, Inc.",https://financialmodelingprep.com/image-stock/XPO.png
+XRAY,DENTSPLY SIRONA Inc.,https://financialmodelingprep.com/image-stock/XRAY.png
+XYL,Xylem Inc.,https://financialmodelingprep.com/image-stock/XYL.png
+YETI,"YETI Holdings, Inc.",https://financialmodelingprep.com/image-stock/YETI.png
+YUM,"Yum! Brands, Inc.",https://financialmodelingprep.com/image-stock/YUM.png
+ZBH,"Zimmer Biomet Holdings, Inc.",https://financialmodelingprep.com/image-stock/ZBH.png
+ZTS,Zoetis Inc.,https://financialmodelingprep.com/image-stock/ZTS.png

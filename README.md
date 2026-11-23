@@ -25,6 +25,10 @@ entrena con la misma semilla (42), escribe `modelo_final.joblib` y `predicciones
 | Retorno s/ presupuesto en validación | 6,6354 % | 6,6354 % |
 | Compras con 1.000 USD en test | 4, +38,55 USD | 4, +38,55 USD |
 
+**Nombres y logos:** `python empresas.py` (necesita `pip install yfinance`) escribe `empresas.csv` con el nombre de cada
+empresa (Yahoo Finance, o la SEC si Yahoo no lo tiene) y el link a su logo (Financial Modeling Prep, gratis y sin clave).
+Si el archivo no está, la app muestra solo el ticker.
+
 **Si los datos cambian:** reemplazar el CSV, correr `python entrenar.py` y subir los dos archivos que genera.
 Si `modelo_final.joblib` no está o no se puede leer, la app entrena el modelo sola al arrancar (tarda un par de minutos).
 El `.joblib` se guardó con scikit-learn 1.9.1; si lo regeneran con otra versión, cambien la versión en `requirements.txt`.

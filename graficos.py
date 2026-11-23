@@ -260,7 +260,8 @@ def grafico_explora(d):
                   x=x, y=y, color=alt.Color('signo:N', scale=SIGNO, title=None, legend=alt.Legend(orient='top')),
                   opacity=alt.condition(punto, alt.value(.85), alt.value(.2)),
                   size=alt.condition(punto, alt.value(90), alt.value(60)),
-                  tooltip=[alt.Tooltip('ticker:N', title='Empresa'), alt.Tooltip('fecha:N', title='Fecha'),
+                  tooltip=[alt.Tooltip('ticker:N', title='Ticker'), alt.Tooltip('nombre:N', title='Empresa'),
+                           alt.Tooltip('fecha:N', title='Fecha'),
                            alt.Tooltip('surprise_pct:Q', title='Sorpresa (%)', format='+.1f'),
                            alt.Tooltip('retorno_lead3:Q', title='Retorno a 3 días (%)', format='+.2f')])
               .add_params(sector, punto))
