@@ -35,87 +35,90 @@ def fmt(v):   # -2,9 % · 14 % (coma decimal, sin decimales si es grande)
     return t.replace('-', '−').replace('.', ',') + ' %'
 
 
-# ---------- 1. Los datos: retorno a 3 días según la sorpresa (Entrega 4, celda 3) ----------
+SIGNO = alt.Scale(domain=['Sorpresa negativa', 'Sorpresa positiva'], range=['#E07A5F', '#3D5A80'])
+RET_Y = [-20, 20]   # mismo eje de «retorno a 3 días» en todos los gráficos que lo muestran, para poder compararlos
+MAGNITUDES = ['menor', 'media-baja', 'media-alta', 'mayor']
+
+
+def _num(v):
+    return f'{v:,.1f}'.replace(',', 'X').replace('.', ',').replace('X', '.')
+
+
+def con_grupos(df_stocks):
+    """Los balances con sorpresa distinta de cero, en los mismos 8 grupos para «Los datos» y «Lo que encontramos»:
+    4 grupos de magnitud (valor absoluto de la sorpresa, con la misma cantidad de anuncios) × el signo."""
+    h = df_stocks.replace([np.inf, -np.inf], np.nan).copy()
+    previo = h['close_adj_lag1'].where(h['close_adj_lag1'] > 0)
+    h['retorno_apertura'] = (h['open_adj_lead'] / previo - 1) * 100
+    h['retorno_3d'] = (h['close_adj_lead3'] / previo - 1) * 100
+    h = h.dropna(subset=['surprise', 'surprise_pct', 'retorno_apertura'])
+    h = h[h['surprise_pct'] != 0].copy()
+    h['tipo'] = np.where(h['surprise'] < 0, 'Sorpresa negativa', 'Sorpresa positiva')
+    h['grupo'] = pd.qcut(h['surprise_pct'].abs(), 4, labels=False) + 1        # 1 = menor magnitud, 4 = mayor
+    rango = h.groupby('grupo')['surprise_pct'].agg(lambda s: f'{_num(s.abs().min())} % a {_num(s.abs().max())} %')
+    rango[4] = f"más de {_num(h.loc[h['grupo'] == 4, 'surprise_pct'].abs().min())} %"
+    h['magnitud'] = h['grupo'].map(lambda g: MAGNITUDES[g - 1]) + ' · ' + h['grupo'].map(rango)
+    # De la más negativa a la más positiva: −mayor … −menor, +menor … +mayor
+    h['orden'] = np.where(h['tipo'] == 'Sorpresa negativa', 5 - h['grupo'], 4 + h['grupo'])
+    h['columna'] = np.where(h['tipo'] == 'Sorpresa negativa', 'Negativa ', 'Positiva ') + h['grupo'].map(lambda g: MAGNITUDES[g - 1])
+    return h
+
+
+# ---------- 1. Los datos: retorno a 3 días según la sorpresa ----------
 def grafico_datos(df_stocks):
-    d = (df_stocks.replace([np.inf, -np.inf], np.nan)
-           .dropna(subset=['surprise_pct', 'close_adj_lag1', 'close_adj_lead3']))
-    d = d[d['close_adj_lag1'] > 0].copy()
-    d['retorno_3d'] = (d['close_adj_lead3'] / d['close_adj_lag1'] - 1) * 100
-
-    N_GRUPOS = 20   # 20 grupos con la misma cantidad de balances, de menor a mayor sorpresa
-    d['grupo'] = pd.qcut(d['surprise_pct'], N_GRUPOS, labels=False) + 1
-
-    resumen = d.groupby('grupo').agg(
+    d = con_grupos(df_stocks).dropna(subset=['retorno_3d'])
+    resumen = d.groupby(['orden', 'columna', 'tipo', 'magnitud']).agg(
         balances=('retorno_3d', 'size'),
-        sorpresa_desde=('surprise_pct', 'min'), sorpresa_hasta=('surprise_pct', 'max'),
-        sorpresa_mediana=('surprise_pct', 'median'),
         p10=('retorno_3d', lambda s: s.quantile(.10)), p25=('retorno_3d', lambda s: s.quantile(.25)),
         mediana=('retorno_3d', 'median'),
         p75=('retorno_3d', lambda s: s.quantile(.75)), p90=('retorno_3d', lambda s: s.quantile(.90)),
         pct_sube=('retorno_3d', lambda s: (s > 0).mean() * 100),
     ).reset_index()
-    resumen['sorpresa_rango'] = (resumen['sorpresa_desde'].round(1).astype(str) + ' % a '
-                                 + resumen['sorpresa_hasta'].round(1).astype(str) + ' %')
-    resumen['etiqueta'] = resumen['sorpresa_mediana'].apply(fmt)
-    tip = [alt.Tooltip('grupo:O', title='Grupo (1 = menor sorpresa)'),
-           alt.Tooltip('etiqueta:N', title='Sorpresa mediana'),
-           alt.Tooltip('sorpresa_rango:N', title='Sorpresa (%)'),
-           alt.Tooltip('balances:Q', title='Balances'),
+    resumen['etiqueta'] = resumen['mediana'].map(fmt)
+    tip = [alt.Tooltip('tipo:N', title='Signo'), alt.Tooltip('magnitud:N', title='Magnitud'),
+           alt.Tooltip('balances:Q', title='Balances', format=','),
            alt.Tooltip('mediana:Q', title='Retorno mediano (%)', format='+.2f'),
            alt.Tooltip('p25:Q', title='25 % rinde menos de (%)', format='+.2f'),
            alt.Tooltip('p75:Q', title='25 % rinde más de (%)', format='+.2f'),
            alt.Tooltip('pct_sube:Q', title='Subieron (%)', format='.0f')]
 
     ALTO = 380
-    hover = alt.selection_point(name='hover', fields=['grupo'], on='pointerover', clear='pointerout', nearest=False)
+    hover = alt.selection_point(name='hover', fields=['orden'], on='pointerover', clear='pointerout', nearest=False)
     opac = alt.condition(hover, alt.value(1), alt.value(.55))
+    y_esc = alt.Scale(domain=RET_Y, clamp=True)
     base = alt.Chart(resumen).encode(
-        x=alt.X('etiqueta:N', sort=alt.EncodingSortField('grupo'),
-                title='Sorpresa típica (mediana) de cada grupo: de la más negativa a la más positiva',
-                axis=alt.Axis(labelAngle=-45)))
-    # Zona de hover: columna completa e invisible, para no tener que apuntarle justo a la caja
-    zona = base.mark_bar(size=34, opacity=0).encode(y=alt.value(0), y2=alt.value(ALTO), tooltip=tip).add_params(hover)
+        x=alt.X('columna:N', sort=alt.EncodingSortField('orden'),
+                title='Sorpresa del balance: de la más negativa a la más positiva', axis=alt.Axis(labelAngle=-30)))
+    zona = base.mark_bar(size=60, opacity=0).encode(y=alt.value(0), y2=alt.value(ALTO), tooltip=tip).add_params(hover)
     rango = base.mark_rule(strokeWidth=2, color='#8D99AE').encode(
-        y=alt.Y('p10:Q', title='Retorno a 3 días (%)'), y2='p90:Q', opacity=opac)
-    caja = base.mark_bar(size=16, color='#3D5A80').encode(y='p25:Q', y2='p75:Q', opacity=opac)
-    mediana = base.mark_tick(size=22, thickness=3, color='#E07A5F').encode(y='mediana:Q', opacity=opac)
-    cero = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black', strokeDash=[4, 3]).encode(y='y:Q')
+        y=alt.Y('p10:Q', title='Retorno a 3 días (%)', scale=y_esc), y2='p90:Q', opacity=opac)
+    caja = base.mark_bar(size=26).encode(y=alt.Y('p25:Q', scale=y_esc), y2='p75:Q', opacity=opac,
+                                         color=alt.Color('tipo:N', scale=SIGNO, title=None, legend=alt.Legend(orient='top')))
+    mediana = base.mark_tick(size=36, thickness=3, color='black').encode(y=alt.Y('mediana:Q', scale=y_esc), opacity=opac)
+    numeros = base.mark_text(dx=26, align='left', fontSize=12, fontWeight='bold').encode(y=alt.Y('mediana:Q', scale=y_esc), text='etiqueta:N')
+    cero = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black', strokeDash=[4, 3]).encode(y=alt.Y('y:Q', scale=y_esc))
 
-    return (zona + cero + rango + caja + mediana).properties(
+    return (zona + cero + rango + caja + mediana + numeros).properties(
         width=720, height=ALTO,
-        title=alt.TitleParams('Retorno a 3 días según la sorpresa del balance',
-                              subtitle=[f'{len(d):,} balances en 20 grupos del mismo tamaño. Pasá el mouse por un grupo.'.replace(',', '.'),
-                                        'Raya: de 10 % a 90 % de los balances · caja: 25 % a 75 % · marca naranja: mediana.']))
+        title=alt.TitleParams('Cuanto peor la sorpresa, peor le va a la acción en los 3 días siguientes',
+                              subtitle=[f'{len(d):,} balances en 8 grupos: 4 tamaños de sorpresa, separados en negativas y positivas.'.replace(',', '.'),
+                                        'Raya: de 10 % a 90 % de los balances · caja: 25 % a 75 % · marca negra y número: el retorno típico (mediana).']))
 
 
-# ---------- 2. Lo que encontramos: caída fuerte por signo de la sorpresa (Entrega 4, celda 6) ----------
+# ---------- 2. Lo que encontramos: caída fuerte por signo de la sorpresa ----------
 def grafico_hallazgo(df_stocks):
-    h = df_stocks.replace([np.inf, -np.inf], np.nan).copy()
-    h['retorno_apertura'] = (h['open_adj_lead'] / h['close_adj_lag1'].where(h['close_adj_lag1'] > 0) - 1) * 100
-    h = h.dropna(subset=['surprise', 'surprise_pct', 'retorno_apertura'])
-    h = h[h['surprise_pct'] != 0].copy()
-
-    h['tipo'] = np.where(h['surprise'] < 0, 'Sorpresa negativa', 'Sorpresa positiva')
-    h['grupo'] = pd.qcut(h['surprise_pct'].abs(), 4, labels=False) + 1        # 1 = menor magnitud, 4 = mayor
+    h = con_grupos(df_stocks)
     h['caida_fuerte'] = h['retorno_apertura'] <= -1.98                         # primer cuartil del retorno
-
-    rangos = h.groupby('grupo')['surprise_pct'].apply(lambda s: s.abs().min()).to_frame('desde')
-    rangos['hasta'] = h.groupby('grupo')['surprise_pct'].apply(lambda s: s.abs().max())
-    nombres = ['menor', 'media-baja', 'media-alta', 'mayor']
-    f = lambda v: f'{v:,.1f}'.replace(',', 'X').replace('.', ',').replace('X', '.')
-    rangos['etiqueta'] = [f'{n} ({f(a)} % a {f(b)} %)' for n, a, b in zip(nombres, rangos['desde'], rangos['hasta'])]
-
-    resumen = (h.groupby(['grupo', 'tipo'])['caida_fuerte'].agg(anuncios='size', riesgo='mean').reset_index())
+    resumen = h.groupby(['grupo', 'magnitud', 'tipo'])['caida_fuerte'].agg(anuncios='size', riesgo='mean').reset_index()
     resumen['riesgo_pct'] = resumen['riesgo'] * 100
-    resumen['magnitud'] = resumen['grupo'].map(rangos['etiqueta'])
+    orden = resumen.sort_values('grupo')['magnitud'].unique().tolist()
 
-    colores = alt.Scale(domain=['Sorpresa negativa', 'Sorpresa positiva'], range=['#E07A5F', '#3D5A80'])
     base = alt.Chart(resumen).encode(
-        x=alt.X('magnitud:N', sort=list(rangos['etiqueta']), title='Magnitud de la sorpresa (valor absoluto, de menor a mayor)',
-                axis=alt.Axis(labelAngle=0, labelLimit=170)),
+        x=alt.X('magnitud:N', sort=orden, title='Tamaño de la sorpresa (sin importar el signo), de menor a mayor',
+                axis=alt.Axis(labelAngle=0, labelExpr="split(datum.label, ' · ')")),
         xOffset=alt.XOffset('tipo:N'),
         y=alt.Y('riesgo_pct:Q', title='Anuncios con caída fuerte (%)', scale=alt.Scale(domain=[0, 60])),
-        color=alt.Color('tipo:N', scale=colores, title=None, legend=alt.Legend(orient='top')))
+        color=alt.Color('tipo:N', scale=SIGNO, title=None, legend=alt.Legend(orient='top')))
     barras = base.mark_bar().encode(tooltip=[
         alt.Tooltip('tipo:N', title='Signo'), alt.Tooltip('magnitud:N', title='Magnitud'),
         alt.Tooltip('anuncios:Q', title='Anuncios', format=','),
@@ -124,51 +127,8 @@ def grafico_hallazgo(df_stocks):
 
     return (barras + numeros).properties(
         width=640, height=340,
-        title=alt.TitleParams('A igual magnitud, las sorpresas negativas caen fuerte mucho más seguido',
-                              subtitle='Caída fuerte: retorno de −1,98 % o menos entre el cierre previo y la primera apertura. 4 grupos con la misma cantidad de anuncios.'))
-
-
-# ---------- 3. El modelo: retorno por modelo en validación (Entrega 4, celda 10) ----------
-# Resumen de validación de la Entrega 3 (28 presupuestos de 100 a 10.000 USD, cada modelo con su umbral único)
-RESUMEN_RET = pd.DataFrame([
-    ('Random Forest',     6.6354,  5.68, 10.35, 100.0000, 18.5),
-    ('Gradient Boosting', 6.2568,  4.35, 10.35, 100.0000, 18.0),
-    ('Árbol de decisión', 5.5529,  2.97,  7.92, 100.0000, 19.0),
-    ('Regresión lineal',  3.7989,  1.49,  9.11, 100.0000,  9.0),
-    ('Comprar todo',      0.3100, -2.76,  1.69,  78.5714, np.nan),
-    ('Dummy (media)',    -0.4211, -4.02,  1.96,  35.7143, 18.5),
-], columns=['modelo', 'medio', 'minimo', 'maximo', 'con_ganancia', 'umbral'])
-
-
-def grafico_modelos():
-    r = RESUMEN_RET.copy()
-    r['umbral_txt'] = r['umbral'].map(lambda u: '—' if pd.isna(u) else f'{u:g} %'.replace('.', ','))
-    r['y_txt'] = r['medio'].map(lambda v: v + .45 if v >= 0 else v - .45)
-    r['etiqueta'] = r['medio'].map(lambda v: f'{v:.2f} %'.replace('-', '−').replace('.', ','))
-    orden = r.sort_values('medio', ascending=False)['modelo'].tolist()
-
-    hover = alt.selection_point(name='hover', fields=['modelo'], on='pointerover', clear='pointerout')
-    opac = alt.condition(hover, alt.value(1), alt.value(.6))
-    tip = [alt.Tooltip('modelo:N', title='Modelo'),
-           alt.Tooltip('medio:Q', title='Retorno medio (%)', format='+.2f'),
-           alt.Tooltip('minimo:Q', title='Peor presupuesto (%)', format='+.2f'),
-           alt.Tooltip('maximo:Q', title='Mejor presupuesto (%)', format='+.2f'),
-           alt.Tooltip('con_ganancia:Q', title='Presupuestos con ganancia (%)', format='.0f'),
-           alt.Tooltip('umbral_txt:N', title='Umbral de compra')]
-
-    base = alt.Chart(r).encode(x=alt.X('modelo:N', sort=orden, title=None, axis=alt.Axis(labelAngle=-15)))
-    barras = base.mark_bar().encode(
-        y=alt.Y('medio:Q', title=['Retorno s/ presupuesto (%)', 'promedio entre presupuestos']),
-        color=alt.Color('modelo:N', scale=alt.Scale(domain=list(COLOR), range=list(COLOR.values())), legend=None),
-        stroke=alt.condition(alt.datum.modelo == ELEGIDO, alt.value('black'), alt.value('transparent')),
-        strokeWidth=alt.value(2.5), opacity=opac, tooltip=tip).add_params(hover)
-    numeros = base.mark_text(fontSize=12).encode(y='y_txt:Q', text='etiqueta:N')
-    cero = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black').encode(y='y:Q')
-
-    return (barras + cero + numeros).properties(
-        width=620, height=340,
-        title=alt.TitleParams('Validación: retorno promedio sobre el presupuesto por modelo',
-                              subtitle=f'Borde negro: {ELEGIDO}'))
+        title=alt.TitleParams('A igual tamaño de sorpresa, las negativas caen fuerte mucho más seguido',
+                              subtitle='Caída fuerte: −1,98 % o menos entre el cierre previo y la primera apertura. Los mismos 4 tamaños del gráfico anterior.'))
 
 
 # ---------- 3b. El modelo: MAE contra el piso (Entrega 4, celda 11) ----------
@@ -199,7 +159,7 @@ def grafico_mae():
            alt.Tooltip('mae_test:Q', title='MAE test (pp)', format='.3f')]
 
     y = alt.Y('modelo:N', sort=orden, title=None)
-    x_esc = alt.Scale(domain=[5.0, 6.2])
+    x_esc = alt.Scale(domain=[5.0, 6.2])   # no empieza en 0: se aclara en el subtítulo
     base = alt.Chart(mae).encode(y=y)
     punto = base.mark_circle(size=170, stroke='black', strokeWidth=1.2).encode(
         x=alt.X('mae_cv:Q', scale=x_esc, title='MAE (puntos porcentuales del retorno a 3 días) · menor es mejor'),
@@ -213,68 +173,121 @@ def grafico_mae():
 
     return (piso + punto + numeros + test).properties(
         width=640, height=300,
-        title=alt.TitleParams('Todos los modelos le ganan al piso, pero por poco: el MAE baja de 5,38 a 5,15 pp',
+        title=alt.TitleParams('Random Forest es el que menos se equivoca: 5,15 pp contra 5,38 del dummy',
                               subtitle=['Círculo: MAE en validación cruzada temporal. Rombo negro: MAE en test (2026Q3),',
                                         'solo para el modelo final y el piso. Línea punteada: piso (predecir siempre la media).',
-                                        'La mejora (−4 %) es menor que el desvío entre folds (±0,5 pp): pasá el cursor para verlo.']))
+                                        'Ojo: el eje empieza en 5, no en 0, para que se vean las diferencias, que son chicas.']))
+
+
+# ---------- 3c. El modelo: R² de la regresión, antes de la regla de compra ----------
+def grafico_r2(r2):
+    r = r2.copy()
+    r['etiqueta'] = r['r2'].map(lambda v: f'{v:.2f}'.replace('.', ','))
+    base = alt.Chart(r).encode(x=alt.X('periodo:N', sort=r['periodo'].tolist(), title=None, axis=alt.Axis(labelAngle=0)))
+    barras = base.mark_bar(size=46, color=COLOR[ELEGIDO]).encode(
+        y=alt.Y('r2:Q', title='R² (1 = predice perfecto, 0 = igual que el dummy)', scale=alt.Scale(domain=[0, 1])),
+        tooltip=[alt.Tooltip('periodo:N', title='Período'), alt.Tooltip('r2:Q', title='R²', format='.3f'),
+                 alt.Tooltip('balances:Q', title='Balances', format=',')])
+    numeros = base.mark_text(dy=-8, fontSize=13, fontWeight='bold').encode(y='r2:Q', text='etiqueta:N')
+    return (barras + numeros).properties(
+        width=640, height=300,
+        title=alt.TitleParams('Por sí solo, el modelo explica muy poco: entre 5 % y 12 % de cómo se mueve la acción',
+                              subtitle=['R² del Random Forest en cada año de la validación cruzada, en validación (2026 S1) y en test (2026Q3).',
+                                        'El eje va de 0 a 1 a propósito: el dummy está en 0 y un modelo perfecto llegaría a 1.']))
+
+
+# ---------- 3d. El modelo: la calibración del umbral ----------
+def grafico_umbral_mapa(grilla, umbral):
+    g = grilla.copy()
+    g['umbral2'] = g['umbral (%)'] + .5
+    lim = float(np.ceil(g['retorno s/ presupuesto (%)'].abs().quantile(.98)))
+    mapa = alt.Chart(g).mark_rect().encode(
+        x=alt.X('umbral (%):Q', title='Umbral de compra (%): el modelo compra si espera que la acción suba más que esto',
+                scale=alt.Scale(domain=[0, 45], nice=False)),
+        x2='umbral2:Q',
+        y=alt.Y('presupuesto (USD):O', title='Presupuesto (USD)', sort='descending'),
+        color=alt.Color('retorno s/ presupuesto (%):Q', title=['Ganancia s/', 'presupuesto (%)'],
+                        scale=alt.Scale(scheme='redblue', domain=[-lim, lim], domainMid=0, clamp=True)),
+        tooltip=[alt.Tooltip('umbral (%):Q', title='Umbral (%)'), alt.Tooltip('presupuesto (USD):O', title='Presupuesto (USD)'),
+                 alt.Tooltip('compras:Q', title='Compras'),
+                 alt.Tooltip('retorno s/ presupuesto (%):Q', title='Ganancia s/ presupuesto (%)', format='+.2f')])
+    regla = alt.Chart(pd.DataFrame({'x': [umbral + .25]})).mark_rule(color='black', strokeWidth=2, strokeDash=[5, 3]).encode(x='x:Q')
+    return (mapa + regla).properties(
+        width=640, height=420,
+        title=alt.TitleParams('Random Forest en validación: cuánto gana con cada umbral y cada presupuesto',
+                              subtitle=[f'Azul: gana · rojo: pierde · blanco: ni gana ni pierde. Línea punteada: el umbral elegido ({umbral:g} %).'.replace('.', ','),
+                                        'Con umbrales bajos compra casi todo y gana poco; con umbrales muy altos casi no compra.']))
+
+
+def grafico_umbral_curva(curvas, umbral):
+    colores = alt.Scale(domain=[ELEGIDO, 'Dummy (media)'], range=[COLOR[ELEGIDO], COLOR['Dummy (media)']])
+    x = alt.X('umbral (%):Q', title='Umbral de compra (%)', scale=alt.Scale(domain=[0, 45], nice=False))
+    y = alt.Y('retorno:Q', title=['Ganancia s/ presupuesto (%)', 'promedio de los 28 presupuestos'])
+    linea = alt.Chart(curvas).mark_line(strokeWidth=2.5).encode(
+        x=x, y=y, color=alt.Color('modelo:N', scale=colores, title=None, legend=alt.Legend(orient='top')),
+        tooltip=[alt.Tooltip('modelo:N', title='Modelo'), alt.Tooltip('umbral (%):Q', title='Umbral (%)'),
+                 alt.Tooltip('retorno:Q', title='Ganancia promedio (%)', format='+.2f')])
+    elegido = curvas[curvas['umbral (%)'] == umbral].copy()
+    elegido['t'] = elegido['retorno'].map(lambda v: f'{v:+.2f} %'.replace('-', '−').replace('.', ','))
+    puntos = alt.Chart(elegido).mark_point(size=110, filled=True, stroke='black').encode(x=x, y=y, color=alt.Color('modelo:N', scale=colores))
+    textos = alt.Chart(elegido).mark_text(dx=10, align='left', fontSize=12, fontWeight='bold').encode(x=x, y=y, text='t:N')
+    regla = alt.Chart(pd.DataFrame({'x': [umbral]})).mark_rule(color='black', strokeDash=[5, 3]).encode(x='x:Q')
+    cero = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black').encode(y='y:Q')
+    # Desde donde el modelo ya no llega a 3 compras en ningún presupuesto, el resultado depende de una o dos acciones
+    desde = float(curvas.query('modelo == @ELEGIDO and compras_max < 3')['umbral (%)'].min())
+    suerte = alt.Chart(pd.DataFrame({'x': [desde], 'x2': [45]})).mark_rect(color='#9E9E9E', opacity=.15).encode(x='x:Q', x2='x2:Q')
+    suerte_t = alt.Chart(pd.DataFrame({'x': [desde], 't': ['1 o 2 compras: es suerte']})).mark_text(
+        align='left', dx=6, dy=4, baseline='top', fontSize=12, color='#5b6170').encode(x='x:Q', y=alt.value(0), text='t:N')
+    return (suerte + suerte_t + cero + regla + linea + puntos + textos).properties(
+        width=640, height=320,
+        title=alt.TitleParams('Con el umbral elegido, el modelo gana y el dummy pierde',
+                              subtitle=[f'Línea punteada: umbral elegido ({umbral:g} %), el de mayor ganancia promedio del Random Forest'.replace('.', ','),
+                                        'con al menos 3 compras. En gris, umbrales tan altos que el modelo compra 1 o 2 acciones: no sirven para decidir.']))
 
 
 # =====================================================================================
 # Tu turno
 # =====================================================================================
-SIGNO = alt.Scale(domain=['Sorpresa negativa', 'Sorpresa positiva'], range=['#E07A5F', '#3D5A80'])   # = hallazgos
-
-
-def _tooltip_balance():
-    return [alt.Tooltip('ticker:N', title='Empresa'), alt.Tooltip('fecha:N', title='Fecha del balance'),
-            alt.Tooltip('sector:N', title='Sector'),
-            alt.Tooltip('surprise_pct:Q', title='Sorpresa (%)', format='+.1f'),
-            alt.Tooltip('retorno_esperado:Q', title='El modelo esperaba que subiera (%)', format='+.2f'),
-            alt.Tooltip('confianza_pct:Q', title='Confianza en que sube (%)', format='.1f'),
-            alt.Tooltip('retorno_operable:Q', title='Subió (%)', format='+.2f'),
-            alt.Tooltip('decision:N', title='¿Hubiera comprado?')]
-
-
-# ---------- Explorá: los balances de 2026Q3, medidos desde la apertura, como decide el modelo ----------
-def grafico_explora(pred, umbral):
-    d = pred[pred['conjunto'] == 'Test'].copy()          # 2026Q3: lo predice el modelo final, que no lo vio
-    d['fecha'] = pd.to_datetime(d['reported_date']).dt.strftime('%d/%m/%Y')
-    d['signo'] = np.where(d['surprise_pct'] < 0, 'Sorpresa negativa', 'Sorpresa positiva')
-    d['decision'] = np.where(d['compraria'], 'Sí', 'No')
-    d['confianza_pct'] = d['confianza'] * 100
-    d['sector'] = d['sector'].fillna('Sin sector')
-    d = d[['ticker', 'fecha', 'sector', 'surprise_pct', 'retorno_esperado', 'confianza_pct', 'retorno_operable',
-           'decision', 'compraria', 'signo']]
-
+# ---------- 1. Explorá: sorpresa y retorno de cada balance de 2026Q3, sin modelo ----------
+def grafico_explora(d):
     sectores = ['Todos'] + sorted(d['sector'].unique())
     sector = alt.param(name='sector_sel', value='Todos', bind=alt.binding_select(options=sectores, name='Sector '))
-    cuales = alt.param(name='cuales', value='Todos',
-                       bind=alt.binding_radio(options=['Todos', 'Sólo los que hubiera comprado'], name='Balances '))
-    zoom = alt.selection_interval(bind='scales')
-
-    x = alt.X('retorno_esperado:Q', title='Cuánto esperaba el modelo que subiera desde la apertura (%)',
-              scale=alt.Scale(domain=[-20, 35]))
-    y = alt.Y('retorno_operable:Q', title='Cuánto subió desde la apertura hasta el 3er día (%)',
-              scale=alt.Scale(domain=[-25, 25], clamp=True))
-    base = (alt.Chart(d)
-            .transform_filter("sector_sel == 'Todos' || datum.sector == sector_sel")
-            .transform_filter("cuales == 'Todos' || datum.compraria"))
-    color = alt.Color('signo:N', scale=SIGNO, title=None, legend=alt.Legend(orient='top'))
-    zona = alt.Chart(pd.DataFrame({'x': [umbral], 'x2': [35]})).mark_rect(color='#2A9D8F', opacity=.08).encode(x='x:Q', x2='x2:Q')
-    regla = alt.Chart(pd.DataFrame({'x': [umbral]})).mark_rule(color='black', strokeWidth=1.5).encode(x='x:Q')
-    etiqueta = alt.Chart(pd.DataFrame({'x': [umbral], 't': [f'umbral {umbral:g} %: a la derecha, compra'.replace('.', ',')]})).mark_text(
-        align='left', dx=6, fontSize=12, fontWeight='bold').encode(x='x:Q', y=alt.value(12), text='t:N')
-    puntos = base.mark_circle(size=60, opacity=.6).encode(x=x, y=y, color=color, tooltip=_tooltip_balance()).add_params(
-        sector, cuales, zoom)
-    compras = base.transform_filter('datum.compraria').mark_point(
-        size=170, filled=True, stroke='black', strokeWidth=1.5, opacity=1).encode(x=x, y=y, color=color, tooltip=_tooltip_balance())
+    punto = alt.selection_point(name='punto', fields=['id'], on='click')
+    x = alt.X('surprise_pct:Q', title='Sorpresa del balance (%)', scale=alt.Scale(domain=[-40, 40], clamp=True))
+    y = alt.Y('retorno_lead3:Q', title='Retorno a 3 días (%)', scale=alt.Scale(domain=RET_Y, clamp=True))
+    puntos = (alt.Chart(d).transform_filter("sector_sel == 'Todos' || datum.sector == sector_sel")
+              .mark_circle(size=70).encode(
+                  x=x, y=y, color=alt.Color('signo:N', scale=SIGNO, title=None, legend=alt.Legend(orient='top')),
+                  opacity=alt.condition(punto, alt.value(.85), alt.value(.2)),
+                  size=alt.condition(punto, alt.value(90), alt.value(60)),
+                  tooltip=[alt.Tooltip('ticker:N', title='Empresa'), alt.Tooltip('fecha:N', title='Fecha'),
+                           alt.Tooltip('surprise_pct:Q', title='Sorpresa (%)', format='+.1f'),
+                           alt.Tooltip('retorno_lead3:Q', title='Retorno a 3 días (%)', format='+.2f')])
+              .add_params(sector, punto))
+    cero_x = alt.Chart(pd.DataFrame({'v': [0]})).mark_rule(color='black', strokeDash=[4, 3]).encode(x='v:Q')
     cero_y = alt.Chart(pd.DataFrame({'v': [0]})).mark_rule(color='black', strokeDash=[4, 3]).encode(y='v:Q')
+    return (cero_x + cero_y + puntos).properties(
+        width=480, height=440,
+        title=alt.TitleParams(f'Los {len(d)} balances de 2026Q3: sorpresa y retorno',
+                              subtitle=['Abajo a la izquierda: sorpresa negativa y la acción cayó. Arriba a la derecha: positiva y subió.',
+                                        'Hacé clic en un punto para ver su balance. Los que se salen del gráfico quedan en el borde.']))
 
-    return (zona + regla + cero_y + puntos + compras + etiqueta).properties(
-        width=740, height=460,
-        title=alt.TitleParams(f'Los {len(d)} balances de 2026Q3: lo que esperaba el modelo, lo que pasó y si hubiera comprado',
-                              subtitle=['Todo medido desde el precio de apertura, el primero al que se puede comprar. Con borde negro, los que hubiera comprado:',
-                                        'arriba de la línea punteada ganaron, abajo perdieron. Rueda del mouse para hacer zoom, doble clic para volver.']))
+
+# ---------- 2. Probá: cómo cambia lo que espera el modelo al mover solo la sorpresa ----------
+def grafico_proba(curva, actual, umbral):
+    x = alt.X('sorpresa:Q', title='Sorpresa (%)', scale=alt.Scale(domain=[curva['sorpresa'].min(), curva['sorpresa'].max()], nice=False))
+    y = alt.Y('esperado:Q', title='Cuánto espera que suba desde la apertura (%)', scale=alt.Scale(domain=[-20, 45], clamp=True))
+    zona = alt.Chart(pd.DataFrame({'y': [umbral], 'y2': [45]})).mark_rect(color='#2A9D8F', opacity=.1).encode(y='y:Q', y2='y2:Q')
+    regla = alt.Chart(pd.DataFrame({'y': [umbral]})).mark_rule(color='black', strokeDash=[5, 3]).encode(y='y:Q')
+    texto = alt.Chart(pd.DataFrame({'y': [umbral], 't': [f'umbral {umbral:g} %: arriba, compra'.replace('.', ',')]})).mark_text(
+        align='left', dx=6, dy=-8, fontSize=12, fontWeight='bold').encode(x=alt.value(0), y='y:Q', text='t:N')
+    linea = alt.Chart(curva).mark_line(strokeWidth=2.5, color=COLOR[ELEGIDO]).encode(
+        x=x, y=y, tooltip=[alt.Tooltip('sorpresa:Q', title='Sorpresa (%)'), alt.Tooltip('esperado:Q', title='Espera (%)', format='+.2f')])
+    yo = alt.Chart(actual).mark_point(size=200, filled=True, color='black').encode(x=x, y=y)
+    return (zona + regla + linea + yo + texto).properties(
+        width=600, height=320,
+        title=alt.TitleParams('Lo que espera el modelo para cada sorpresa posible',
+                              subtitle='Punto negro: la sorpresa que elegiste. Todo lo demás del balance queda igual.'))
 
 
 def grafico_simula_compras(compras):

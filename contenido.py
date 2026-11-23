@@ -33,15 +33,6 @@ T_MAE = tabla(
      ["Gradient Boosting", "5,174 ± 0,509", "−3,7 %", "—"],
      ["<b>Random Forest</b>", "<b>5,149 ± 0,515</b>", "<b>−4,2 %</b>", "<b>5,829</b>"]])
 
-T_RETORNO = tabla(
-    ["Modelo", "Umbral", "Retorno medio s/ presupuesto", "Peor presupuesto", "Mejor presupuesto", "Presupuestos con ganancia"],
-    [["<b>Random Forest</b>", "18,5 %", "<b>+6,64 %</b>", "+5,68 %", "+10,35 %", "100 %"],
-     ["Gradient Boosting", "18 %", "+6,26 %", "+4,35 %", "+10,35 %", "100 %"],
-     ["Árbol de decisión", "19 %", "+5,55 %", "+2,97 %", "+7,92 %", "100 %"],
-     ["Regresión lineal", "9 %", "+3,80 %", "+1,49 %", "+9,11 %", "100 %"],
-     ["Comprar todo", "—", "+0,31 %", "−2,76 %", "+1,69 %", "79 %"],
-     ["Dummy (media)", "18,5 %", "−0,42 %", "−4,02 %", "+1,96 %", "36 %"]])
-
 T_COMPRAS = tabla(
     ["#", "Ticker", "Fecha del balance", "Acciones", "Precio de compra (USD)", "Pagó (USD)", "Precio de venta (USD)",
      "Vendió en (USD)", "Ganancia (USD)", "Resultado", "Retorno real", "Retorno esperado", "Confianza"],

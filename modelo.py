@@ -166,15 +166,34 @@ def resultado(montos, real, presupuesto):
             'retorno s/ presupuesto (%)': g.sum() / presupuesto * 100}
 
 
-def buscar_umbral(esperado, prob, precio, real):
-    """Umbral único de la sección 7: mayor retorno s/ presupuesto promediado entre los 28 presupuestos,
-    con al menos MIN_COMPRAS compras en todos (o al menos una donde no se llega al mínimo con ningún umbral)."""
+def grilla(esperado, prob, precio, real):
+    """Resultado de la regla para cada combinación de presupuesto (28) y umbral (0 a 44,5 %)."""
     filas = []
     for p in PRESUPUESTOS:
         for u in GRILLA_UMBRAL:
             montos = simular_presupuesto(peso_modelo(esperado, prob, u), precio, p)
             filas.append({'presupuesto (USD)': p, 'umbral (%)': u, **resultado(montos, real, p)})
-    b = pd.DataFrame(filas)
+    return pd.DataFrame(filas)
+
+
+def dummy_validacion(train, val):
+    """El piso de la Entrega 3 en validación: predice siempre la media del entrenamiento y tiene su propia
+    calibración, ajustada igual que la del modelo (con los mismos 5 años de validación cruzada)."""
+    esp, reales = [], []
+    for a in sorted(train['anio'].unique())[-5:]:
+        va = train[train['anio'] == a]
+        esp.append(esperado_desde_apertura(va, np.full(len(va), train.loc[train['anio'] < a, OBJETIVO].mean())))
+        reales.append(va['retorno_operable'].to_numpy())
+    cal = LogisticRegression(C=1e6).fit(np.clip(np.concatenate(esp), -RECORTE_ESP, RECORTE_ESP).reshape(-1, 1),
+                                        (np.concatenate(reales) > 0).astype(int))
+    esp_val = esperado_desde_apertura(val, np.full(len(val), train[OBJETIVO].mean()))
+    return esp_val, prob_subida(cal, esp_val)
+
+
+def buscar_umbral(esperado, prob, precio, real):
+    """Umbral único de la sección 7: mayor retorno s/ presupuesto promediado entre los 28 presupuestos,
+    con al menos MIN_COMPRAS compras en todos (o al menos una donde no se llega al mínimo con ningún umbral)."""
+    b = grilla(esperado, prob, precio, real)
     factible = b.groupby('presupuesto (USD)')['compras'].max() >= MIN_COMPRAS
     b['llega'] = b['presupuesto (USD)'].map(factible)
     b['cumple'] = np.where(b['llega'], b['compras'] >= MIN_COMPRAS, b['compras'] > 0)

@@ -37,13 +37,15 @@ El `.joblib` se guardó con scikit-learn 1.9.1; si lo regeneran con otra versió
 - `estilo.css` y `.streamlit/config.toml`: el estilo.
 
 ## Qué toca cada control de la copa
-- **Explorá** (controles de Altair, debajo del gráfico): «Eje vertical» cambia el campo del eje y (`transform_calculate`);
-  «Lo predijo», «Sector» y «Balances» filtran los datos (`transform_filter`). Arrastrar y la rueda del mouse cambian la escala
-  (zoom). El tooltip muestra lo que dijo el modelo sobre cada balance.
-- **Probá el modelo**: los campos arman una fila con las columnas crudas del Silver, que pasa por el pipeline final.
-  Avisa si un valor queda fuera del rango que vio el entrenamiento.
-- **Simulá una inversión**: el presupuesto, el período, los sectores y el tamaño filtran los balances; sobre ese universo
-  corre la misma regla de compra de la Entrega 3 (`simular_presupuesto`).
+- **Explorá**: sorpresa contra retorno a 3 días de los 501 balances de 2026Q3, sin modelo. El control «Sector» filtra
+  (`transform_filter`); un clic en un punto abre su balance en el panel de la derecha (`on_select` de Streamlit).
+- **Probá una sorpresa**: se elige una empresa (su último balance) y solo se mueve la sorpresa. La apertura queda la real
+  de ese día, porque la regla de compra mide desde la apertura.
+- **Simulá una inversión**: presupuesto, umbral, sectores y tamaño. El umbral es el mismo que en «Probá»
+  (`st.session_state['umbral']`): moverlo en uno cambia el otro.
+
+La sección «El modelo» calcula al arrancar (con caché) el R² y la grilla umbral × presupuesto en validación, para el
+Random Forest y el dummy (`m.grilla`, `m.dummy_validacion`). El dummy reproduce el −0,42 % del notebook.
 
 ## Publicarla
 En share.streamlit.io: New app → el repositorio del grupo → archivo principal `app/app.py`.

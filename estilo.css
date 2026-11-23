@@ -125,3 +125,10 @@ footer{margin:64px 0 0;padding:24px 0 0;border-top:1px solid var(--linea);color:
   [data-testid="stMarkdownContainer"] h1{font-size:34px!important}
   [data-testid="stMarkdownContainer"] h2{font-size:25px!important}
 }
+
+/* ---------- Panel lateral de «Explorá» ---------- */
+.panel{background:var(--tarjeta);border:1px solid var(--linea);border-radius:12px;padding:16px 18px;box-shadow:var(--sombra)}
+.panel .panel-tit{font-family:var(--serif);font-size:26px!important;font-weight:600;color:var(--tinta);margin:0!important}
+.panel .panel-sub{font-size:13px!important;color:var(--gris)!important;margin:2px 0 12px!important}
+.panel dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:14px}
+.panel dt{color:var(--gris)} .panel dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--tinta)}
