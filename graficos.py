@@ -274,7 +274,8 @@ def grafico_umbral_top(top, umbral):
 
 def grafico_umbral_curva(curvas, umbral):
     colores = alt.Scale(domain=[ELEGIDO, 'Dummy (media)'], range=[COLOR[ELEGIDO], COLOR['Dummy (media)']])
-    x = alt.X('umbral (%):Q', title='Umbral de compra (%)', scale=alt.Scale(domain=[0, 45], nice=False))
+    x_esc = alt.Scale(domain=[0, 45], nice=False)
+    x = alt.X('umbral (%):Q', title='Umbral de compra (%)', scale=x_esc)
     y = alt.Y('ganancia:Q', title=['Ganancia neta (USD)', 'promedio de los 28 presupuestos'])
     linea = alt.Chart(curvas).mark_line(strokeWidth=2.5).encode(
         x=x, y=y, color=alt.Color('modelo:N', scale=colores, title=None, legend=alt.Legend(orient='top')),
@@ -284,13 +285,14 @@ def grafico_umbral_curva(curvas, umbral):
     elegido['t'] = elegido['ganancia'].map(lambda v: f'{v:+,.0f} USD'.replace(',', '.').replace('-', '−'))
     puntos = alt.Chart(elegido).mark_point(size=110, filled=True, stroke='black').encode(x=x, y=y, color=alt.Color('modelo:N', scale=colores))
     textos = alt.Chart(elegido).mark_text(dx=10, align='left', fontSize=12, fontWeight='bold').encode(x=x, y=y, text='t:N')
-    regla = alt.Chart(pd.DataFrame({'x': [umbral]})).mark_rule(color='black', strokeDash=[5, 3]).encode(x='x:Q')
+    regla = alt.Chart(pd.DataFrame({'x': [umbral]})).mark_rule(color='black', strokeDash=[5, 3]).encode(x=alt.X('x:Q', scale=x_esc))
     cero = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black').encode(y='y:Q')
-    # Desde donde el modelo ya no llega a 3 compras en ningún presupuesto, el resultado depende de una o dos acciones
-    desde = float(curvas.query('modelo == @ELEGIDO and compras_max < 3')['umbral (%)'].min())
-    suerte = alt.Chart(pd.DataFrame({'x': [desde], 'x2': [45]})).mark_rect(color='#9E9E9E', opacity=.15).encode(x='x:Q', x2='x2:Q')
+    desde = 23.5
+    suerte = alt.Chart(pd.DataFrame({'x': [desde], 'x2': [45]})).mark_rect(color='#9E9E9E', opacity=.15).encode(
+        x=alt.X('x:Q', scale=x_esc), x2='x2:Q')
     suerte_t = alt.Chart(pd.DataFrame({'x': [desde], 't': ['1 o 2 compras: es suerte']})).mark_text(
-        align='left', dx=6, dy=4, baseline='top', fontSize=12, color='#5b6170').encode(x='x:Q', y=alt.value(0), text='t:N')
+        align='left', dx=6, dy=4, baseline='top', fontSize=12, color='#5b6170').encode(
+            x=alt.X('x:Q', scale=x_esc), y=alt.value(0), text='t:N')
     return (suerte + suerte_t + cero + regla + linea + puntos + textos).properties(
         width=640, height=320,
         title=alt.TitleParams('Con el umbral elegido, el modelo gana y el dummy pierde',
