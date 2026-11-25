@@ -77,6 +77,7 @@ def grafico_datos(df_stocks):
         pct_sube=('retorno_3d', lambda s: (s > 0).mean() * 100),
     ).reset_index()
     resumen['etiqueta'] = resumen['mediana'].map(fmt)
+    resumen['etiqueta_sube'] = resumen['pct_sube'].map(lambda v: f'suben {v:.0f} de cada 100')
     tip = [alt.Tooltip('columna:N', title='Sorpresa'), alt.Tooltip('balances:Q', title='Balances', format=','),
            alt.Tooltip('mediana:Q', title='Retorno mediano (%)', format='+.2f'),
            alt.Tooltip('p25:Q', title='25 % rinde menos de (%)', format='+.2f'),
@@ -97,13 +98,15 @@ def grafico_datos(df_stocks):
     caja = base.mark_bar(size=46, color='#B8C0CC').encode(y=alt.Y('p25:Q', scale=y_esc), y2='p75:Q', opacity=opac)
     mediana = base.mark_tick(size=60, thickness=3, color='#14213d').encode(y=alt.Y('mediana:Q', scale=y_esc), opacity=opac)
     numeros = base.mark_text(dx=36, align='left', fontSize=13, fontWeight='bold').encode(y=alt.Y('mediana:Q', scale=y_esc), text='etiqueta:N')
+    suben = base.mark_text(dy=-10, fontSize=12, color='#5b6170').encode(y=alt.Y('p90:Q', scale=y_esc), text='etiqueta_sube:N')
     cero = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black', strokeDash=[4, 3]).encode(y=alt.Y('y:Q', scale=y_esc))
 
-    return (zona + cero + rango + caja + mediana + numeros).properties(
+    return (zona + cero + rango + caja + mediana + numeros + suben).properties(
         width=680, height=ALTO,
         title=alt.TitleParams('Cuanto peor la sorpresa, peor le va a la acción en los 3 días siguientes',
                               subtitle=[f'{len(d):,}'.replace(',', '.') + ' balances en 4 cuartiles de sorpresa, cada uno con la misma cantidad de balances.',
-                                        'Raya: de 10 % a 90 % de los balances · caja: 25 % a 75 % · marca oscura y número: el retorno típico (mediana).']))
+                                        'Raya: de 10 % a 90 % de los balances · caja: 25 % a 75 % · marca oscura y número: el retorno típico (mediana).',
+                                        'Arriba de cada grupo: de cada 100 acciones, cuántas subieron en los 3 días.']))
 
 
 # ---------- 2. Lo que encontramos: caída fuerte por signo de la sorpresa ----------
