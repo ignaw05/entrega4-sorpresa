@@ -220,16 +220,17 @@ def grafico_mae():
 # ---------- 3c. El modelo: R² del Random Forest, predicho contra real ----------
 def grafico_r2(pred, r2):
     d = pred.loc[pred['conjunto'] == 'Test', ['ticker', 'reported_date', 'prediccion', 'retorno_lead3']]
-    esc = alt.Scale(domain=RET_Y, clamp=True)
+    esc = alt.Scale(domain=RET_Y, clamp=True, nice=False)
+    ticks = alt.Axis(values=list(range(RET_Y[0], RET_Y[1] + 1, 5)))   # misma escala y mismas marcas en los dos ejes
     puntos = alt.Chart(d).mark_circle(size=32, opacity=0.55, color=COLOR[ELEGIDO]).encode(
-        x=alt.X('prediccion:Q', title='Retorno que predice el modelo (%)', scale=esc),
-        y=alt.Y('retorno_lead3:Q', title='Retorno real a 3 días (%)', scale=esc),
+        x=alt.X('prediccion:Q', title='Retorno que predice el modelo (%)', scale=esc, axis=ticks),
+        y=alt.Y('retorno_lead3:Q', title='Retorno real a 3 días (%)', scale=esc, axis=ticks),
         tooltip=[alt.Tooltip('ticker:N', title='Empresa'), alt.Tooltip('reported_date:N', title='Balance'),
                  alt.Tooltip('prediccion:Q', title='Predicho (%)', format='.1f'),
                  alt.Tooltip('retorno_lead3:Q', title='Real (%)', format='.1f')])
     diagonal = alt.Chart(pd.DataFrame({'v': RET_Y})).mark_line(color='black', strokeDash=[5, 4]).encode(x='v:Q', y='v:Q')
     return (puntos + diagonal).properties(
-        width=560, height=420,
+        width=440, height=440,   # cuadrado: 1 punto en x mide lo mismo que 1 punto en y
         title=alt.TitleParams(f'El Random Forest explica apenas el {r2:.0%} del movimiento de la acción'.replace('%', ' %'),
                               subtitle=['Retorno predicho contra retorno real en cada balance de test (2026Q3).',
                                         'Línea punteada: predicción perfecta. Los retornos de más de ±20 % se muestran en el borde.']))
