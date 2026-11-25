@@ -228,7 +228,8 @@ def grafico_r2(pred, r2):
         tooltip=[alt.Tooltip('ticker:N', title='Empresa'), alt.Tooltip('reported_date:N', title='Balance'),
                  alt.Tooltip('prediccion:Q', title='Predicho (%)', format='.1f'),
                  alt.Tooltip('retorno_lead3:Q', title='Real (%)', format='.1f')])
-    diagonal = alt.Chart(pd.DataFrame({'v': RET_Y})).mark_line(color='black', strokeDash=[5, 4]).encode(x='v:Q', y='v:Q')
+    diagonal = alt.Chart(pd.DataFrame({'v': RET_Y})).mark_line(color='black', strokeDash=[5, 4]).encode(
+        x=alt.X('v:Q', scale=esc, axis=ticks), y=alt.Y('v:Q', scale=esc, axis=ticks))   # mismo eje que los puntos, si no Vega mezcla los dos
     return (puntos + diagonal).properties(
         width=440, height=440,   # cuadrado: 1 punto en x mide lo mismo que 1 punto en y
         title=alt.TitleParams(f'El Random Forest explica apenas el {r2:.0%} del movimiento de la acción'.replace('%', ' %'),
