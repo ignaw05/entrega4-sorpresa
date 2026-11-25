@@ -219,10 +219,9 @@ def grafico_mae():
 
 # ---------- 3c. El modelo: R² del Random Forest, predicho contra real ----------
 def grafico_r2(pred, r2):
-    # ponytail: solo las predicciones fuera de muestra de la validación cruzada (~4000 puntos, bajo el límite de 5000 de Altair)
-    d = pred.loc[pred['conjunto'].str.startswith('Entrenamiento'), ['ticker', 'reported_date', 'prediccion', 'retorno_lead3']]
+    d = pred.loc[pred['conjunto'] == 'Test', ['ticker', 'reported_date', 'prediccion', 'retorno_lead3']]
     esc = alt.Scale(domain=RET_Y, clamp=True)
-    puntos = alt.Chart(d).mark_circle(size=18, opacity=0.35, color=COLOR[ELEGIDO]).encode(
+    puntos = alt.Chart(d).mark_circle(size=32, opacity=0.55, color=COLOR[ELEGIDO]).encode(
         x=alt.X('prediccion:Q', title='Retorno que predice el modelo (%)', scale=esc),
         y=alt.Y('retorno_lead3:Q', title='Retorno real a 3 días (%)', scale=esc),
         tooltip=[alt.Tooltip('ticker:N', title='Empresa'), alt.Tooltip('reported_date:N', title='Balance'),
@@ -232,7 +231,7 @@ def grafico_r2(pred, r2):
     return (puntos + diagonal).properties(
         width=560, height=420,
         title=alt.TitleParams(f'El Random Forest explica apenas el {r2:.0%} de cómo se mueve la acción'.replace('%', ' %'),
-                              subtitle=['Cada punto es un balance de la validación cruzada temporal (2021 a 2025), fuera de muestra.',
+                              subtitle=['Cada punto es un balance de test (2026Q3), que el modelo nunca vio al entrenar.',
                                         'Línea punteada: predicción perfecta. Las predicciones quedan apretadas cerca de 0 mientras la realidad se dispersa.']))
 
 

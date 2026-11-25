@@ -229,7 +229,7 @@ Forest, y lo comparamos siempre contra el dummy.</p>
 <p>El <b>R²</b> mide qué parte del movimiento de la acción explica el modelo: 1 sería predecir todo perfecto y 0 es lo
 mismo que el dummy. Lo vemos comparando, balance por balance, lo que predijo el Random Forest con lo que pasó.</p>
 """)
-R2_RF = r2_score(*PRED.loc[PRED['conjunto'].str.startswith('Entrenamiento'), [m.OBJETIVO, 'prediccion']].T.to_numpy())
+R2_RF = r2_score(*PRED.loc[PRED['conjunto'] == 'Test', [m.OBJETIVO, 'prediccion']].T.to_numpy())
 grafico(g.grafico_r2(PRED, R2_RF))
 html(f"""
 <p class="nota"><b>Qué mirar:</b> si el modelo fuera perfecto, los puntos caerían sobre la línea punteada. En cambio
