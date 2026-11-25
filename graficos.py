@@ -217,37 +217,23 @@ def grafico_mae():
                                         'solo para el modelo final y el piso. Línea punteada: piso (predecir siempre la media).']))
 
 
-# ---------- 3c. El modelo: R² de cada modelo, antes de la regla de compra ----------
-# Validación cruzada temporal (2021 a 2025), media y desvío entre años. Sale de modelo.r2_modelos().
-R2 = pd.DataFrame([
-    ('Random Forest',     0.0884, 0.0251),
-    ('Gradient Boosting', 0.0855, 0.0202),
-    ('Árbol de decisión', 0.0666, 0.0370),
-    ('Regresión lineal',  0.0515, 0.0311),
-    ('Dummy (media)',    -0.0025, 0.0028),
-], columns=['modelo', 'r2', 'desvio'])
-
-
-def grafico_r2():
-    r = R2.copy()
-    r['etiqueta'] = r['r2'].map(lambda v: f'{v:.2f}'.replace('-0.00', '0.00').replace('.', ',').replace('-', '−'))
-    r['desde'], r['hasta'] = r['r2'] - r['desvio'], r['r2'] + r['desvio']
-    colores = alt.Scale(domain=list(COLOR), range=list(COLOR.values()))
-    y = alt.Y('r2:Q', title='R² (1 = predice perfecto, 0 = igual que el dummy)', scale=alt.Scale(domain=[0, 1], clamp=True))
-    base = alt.Chart(r).encode(x=alt.X('modelo:N', sort=r['modelo'].tolist(), title=None, axis=alt.Axis(labelAngle=0)))
-    barras = base.mark_bar(size=56).encode(
-        y=y, color=alt.Color('modelo:N', scale=colores, legend=None),
-        stroke=alt.condition(alt.datum.modelo == ELEGIDO, alt.value('black'), alt.value('transparent')),
-        strokeWidth=alt.value(2),
-        tooltip=[alt.Tooltip('modelo:N', title='Modelo'), alt.Tooltip('r2:Q', title='R² medio', format='.3f'),
-                 alt.Tooltip('desvio:Q', title='± desvío entre años', format='.3f')])
-    error = base.mark_rule(color='black', strokeWidth=1.5).encode(y=alt.Y('desde:Q', scale=alt.Scale(domain=[0, 1], clamp=True)), y2='hasta:Q')
-    numeros = base.mark_text(dy=-14, fontSize=13, fontWeight='bold').encode(y=alt.Y('hasta:Q', scale=alt.Scale(domain=[0, 1], clamp=True)), text='etiqueta:N')
-    return (barras + error + numeros).properties(
-        width=640, height=300,
-        title=alt.TitleParams('Ningún modelo explica más del 9 % de cómo se mueve la acción',
-                              subtitle=['R² de cada modelo en la validación cruzada temporal (2021 a 2025). Raya negra: ± desvío entre años.',
-                                        'El eje va de 0 a 1 a propósito: el dummy está en 0 y un modelo perfecto llegaría a 1.']))
+# ---------- 3c. El modelo: R² del Random Forest, predicho contra real ----------
+def grafico_r2(pred, r2):
+    # ponytail: solo las predicciones fuera de muestra de la validación cruzada (~4000 puntos, bajo el límite de 5000 de Altair)
+    d = pred.loc[pred['conjunto'].str.startswith('Entrenamiento'), ['ticker', 'reported_date', 'prediccion', 'retorno_lead3']]
+    esc = alt.Scale(domain=RET_Y, clamp=True)
+    puntos = alt.Chart(d).mark_circle(size=18, opacity=0.35, color=COLOR[ELEGIDO]).encode(
+        x=alt.X('prediccion:Q', title='Retorno que predice el modelo (%)', scale=esc),
+        y=alt.Y('retorno_lead3:Q', title='Retorno real a 3 días (%)', scale=esc),
+        tooltip=[alt.Tooltip('ticker:N', title='Empresa'), alt.Tooltip('reported_date:N', title='Balance'),
+                 alt.Tooltip('prediccion:Q', title='Predicho (%)', format='.1f'),
+                 alt.Tooltip('retorno_lead3:Q', title='Real (%)', format='.1f')])
+    diagonal = alt.Chart(pd.DataFrame({'v': RET_Y})).mark_line(color='black', strokeDash=[5, 4]).encode(x='v:Q', y='v:Q')
+    return (puntos + diagonal).properties(
+        width=560, height=420,
+        title=alt.TitleParams(f'El Random Forest explica apenas el {r2:.0%} de cómo se mueve la acción'.replace('%', ' %'),
+                              subtitle=['Cada punto es un balance de la validación cruzada temporal (2021 a 2025), fuera de muestra.',
+                                        'Línea punteada: predicción perfecta. Las predicciones quedan apretadas cerca de 0 mientras la realidad se dispersa.']))
 
 
 # ---------- 3d. El modelo: la calibración del umbral ----------

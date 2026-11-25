@@ -164,6 +164,7 @@ grafico(g.grafico_hora_reporte(df_stocks))
 
 # ---------- El modelo ----------
 import modelo as m
+from sklearn.metrics import r2_score
 
 ARCH_MODELO, ARCH_PRED = AQUI / 'modelo_final.joblib', AQUI / 'predicciones.csv'
 
@@ -226,13 +227,14 @@ menos se equivoca. Pero la mejora es chica: baja de 5,38 a 5,15 puntos. A partir
 Forest, y lo comparamos siempre contra el dummy.</p>
 <h3 class="sub">Solo, el modelo no es muy bueno</h3>
 <p>El <b>R²</b> mide qué parte del movimiento de la acción explica el modelo: 1 sería predecir todo perfecto y 0 es lo
-mismo que el dummy. Lo medimos para los mismos modelos que comparamos con el MAE.</p>
+mismo que el dummy. Lo vemos comparando, balance por balance, lo que predijo el Random Forest con lo que pasó.</p>
 """)
-grafico(g.grafico_r2())
+R2_RF = r2_score(*PRED.loc[PRED['conjunto'].str.startswith('Entrenamiento'), [m.OBJETIVO, 'prediccion']].T.to_numpy())
+grafico(g.grafico_r2(PRED, R2_RF))
 html(f"""
-<p class="nota"><b>Qué mirar:</b> todas las barras quedan cerca del piso. El orden es el mismo que con el MAE y el
-Random Forest sigue siendo el mejor, pero explica apenas el 9 % de cómo se mueve la acción: la mayor parte de lo que
-pasa después de un balance no se puede anticipar con estos datos. Si compráramos todas las acciones que el modelo espera que suban (umbral 0 %), ganaríamos en promedio
+<p class="nota"><b>Qué mirar:</b> si el modelo fuera perfecto, los puntos caerían sobre la línea punteada. En cambio
+forman una nube casi horizontal: el modelo predice movimientos chicos y la acción se mueve mucho más. Explica apenas el
+{num(R2_RF * 100, 0)} % de cómo se mueve la acción: la mayor parte de lo que pasa después de un balance no se puede anticipar con estos datos. Si compráramos todas las acciones que el modelo espera que suban (umbral 0 %), ganaríamos en promedio
 {num(CURVAS.query("modelo == @m.ELEGIDO and `umbral (%)` == 0")['retorno'].iloc[0])} % del presupuesto en validación. Para
 ganar más hay que calibrar <b>cuándo</b> comprar.</p>
 
