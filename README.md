@@ -52,4 +52,4 @@ La sección «El modelo» calcula al arrancar (con caché) el R² y la grilla um
 Random Forest y el dummy (`m.grilla`, `m.dummy_validacion`). El dummy reproduce el −0,42 % del notebook.
 
 ## Publicarla
-En share.streamlit.io: New app → el repositorio del grupo → archivo principal `app/app.py`.
+En share.streamlit.io: New app → el repositorio del grupo → archivo principal `app.py`.

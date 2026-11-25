@@ -106,7 +106,9 @@ grafico(g.grafico_datos(df_stocks))
 html("""
 <p class="nota"><b>Qué mirar:</b> el número de cada cuartil es el retorno típico. De izquierda a derecha pasa de negativo a
 positivo: el cuartil de las sorpresas más bajas es el único donde la acción típica cae. Pero las cajas son altas y se superponen: dentro de
-un mismo grupo hay acciones que suben y otras que bajan mucho. La sorpresa inclina la balanza, no la decide.</p>
+un mismo grupo hay acciones que suben y otras que bajan mucho. La sorpresa inclina la balanza, no la decide.
+Un detalle de los datos: solo el 23 % de los balances queda por debajo de lo esperado, así que el primer cuartil son casi
+todas las sorpresas negativas más algunas positivas cercanas a cero.</p>
 """)
 with st.expander('Cómo lo sabemos'):
     html(f"""
@@ -120,7 +122,8 @@ with st.expander('Cómo lo sabemos'):
     <h4>Qué se filtró, paso por paso</h4>
     <p>El punto de partida es el Silver que deja el pipeline: 11.317 anuncios de 585 empresas, con 37 columnas.</p>
     {c.T_FILTROS}
-    <p>En este gráfico y el siguiente quedan afuera los balances con sorpresa exactamente 0 %.</p>
+    <p>Los gráficos de esta sección y la siguiente son descriptivos: usan las 11.253 filas con objetivo y sorpresa,
+    incluidos los 18 anuncios de 2026Q4. El modelo usa las 11.235.</p>
     <h4>Cómo se reparten las 11.235 filas</h4>
     <p>La partición es por fecha, no al azar, porque el modelo se usa para predecir balances futuros: se ajusta con todo
     lo anterior a 2026, se elige con 2026Q1 y Q2 y se mide una sola vez con 2026Q3, el último trimestre completo.</p>

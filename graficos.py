@@ -94,8 +94,8 @@ def grafico_datos(df_stocks):
     zona = base.mark_bar(size=120, opacity=0).encode(y=alt.value(0), y2=alt.value(ALTO), tooltip=tip).add_params(hover)
     rango = base.mark_rule(strokeWidth=2, color='#8D99AE').encode(
         y=alt.Y('p10:Q', title='Retorno a 3 días (%)', scale=y_esc), y2='p90:Q', opacity=opac)
-    caja = base.mark_bar(size=46, color='#3D5A80').encode(y=alt.Y('p25:Q', scale=y_esc), y2='p75:Q', opacity=opac)
-    mediana = base.mark_tick(size=60, thickness=3, color='#E07A5F').encode(y=alt.Y('mediana:Q', scale=y_esc), opacity=opac)
+    caja = base.mark_bar(size=46, color='#B8C0CC').encode(y=alt.Y('p25:Q', scale=y_esc), y2='p75:Q', opacity=opac)
+    mediana = base.mark_tick(size=60, thickness=3, color='#14213d').encode(y=alt.Y('mediana:Q', scale=y_esc), opacity=opac)
     numeros = base.mark_text(dx=36, align='left', fontSize=13, fontWeight='bold').encode(y=alt.Y('mediana:Q', scale=y_esc), text='etiqueta:N')
     cero = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black', strokeDash=[4, 3]).encode(y=alt.Y('y:Q', scale=y_esc))
 
@@ -103,7 +103,7 @@ def grafico_datos(df_stocks):
         width=680, height=ALTO,
         title=alt.TitleParams('Cuanto peor la sorpresa, peor le va a la acción en los 3 días siguientes',
                               subtitle=[f'{len(d):,}'.replace(',', '.') + ' balances en 4 cuartiles de sorpresa, cada uno con la misma cantidad de balances.',
-                                        'Raya: de 10 % a 90 % de los balances · caja: 25 % a 75 % · marca naranja y número: el retorno típico (mediana).']))
+                                        'Raya: de 10 % a 90 % de los balances · caja: 25 % a 75 % · marca oscura y número: el retorno típico (mediana).']))
 
 
 # ---------- 2. Lo que encontramos: caída fuerte por signo de la sorpresa ----------
@@ -220,18 +220,16 @@ def grafico_mae():
 # ---------- 3c. El modelo: R² del Random Forest, predicho contra real ----------
 def grafico_r2(pred, r2):
     d = pred.loc[pred['conjunto'] == 'Test', ['ticker', 'reported_date', 'prediccion', 'retorno_lead3']]
-    esc = alt.Scale(domain=RET_Y, clamp=True, nice=False)
-    ticks = alt.Axis(values=list(range(RET_Y[0], RET_Y[1] + 1, 5)))   # misma escala y mismas marcas en los dos ejes
+    esc = alt.Scale(domain=RET_Y, clamp=True)
     puntos = alt.Chart(d).mark_circle(size=32, opacity=0.55, color=COLOR[ELEGIDO]).encode(
-        x=alt.X('prediccion:Q', title='Retorno que predice el modelo (%)', scale=esc, axis=ticks),
-        y=alt.Y('retorno_lead3:Q', title='Retorno real a 3 días (%)', scale=esc, axis=ticks),
+        x=alt.X('prediccion:Q', title='Retorno que predice el modelo (%)', scale=esc),
+        y=alt.Y('retorno_lead3:Q', title='Retorno real a 3 días (%)', scale=esc),
         tooltip=[alt.Tooltip('ticker:N', title='Empresa'), alt.Tooltip('reported_date:N', title='Balance'),
                  alt.Tooltip('prediccion:Q', title='Predicho (%)', format='.1f'),
                  alt.Tooltip('retorno_lead3:Q', title='Real (%)', format='.1f')])
-    diagonal = alt.Chart(pd.DataFrame({'v': RET_Y})).mark_line(color='black', strokeDash=[5, 4]).encode(
-        x=alt.X('v:Q', scale=esc, axis=ticks), y=alt.Y('v:Q', scale=esc, axis=ticks))   # mismo eje que los puntos, si no Vega mezcla los dos
+    diagonal = alt.Chart(pd.DataFrame({'v': RET_Y})).mark_line(color='black', strokeDash=[5, 4]).encode(x='v:Q', y='v:Q')
     return (puntos + diagonal).properties(
-        width=440, height=440,   # cuadrado: 1 punto en x mide lo mismo que 1 punto en y
+        width=560, height=420,
         title=alt.TitleParams(f'El Random Forest explica apenas el {r2:.0%} del movimiento de la acción'.replace('%', ' %'),
                               subtitle=['Retorno predicho contra retorno real en cada balance de test (2026Q3).',
                                         'Línea punteada: predicción perfecta. Los retornos de más de ±20 % se muestran en el borde.']))
