@@ -225,18 +225,20 @@ html("""
 <p class="nota"><b>Qué mirar:</b> los cuatro modelos le ganan al dummy (la línea punteada), y el Random Forest es el que
 menos se equivoca. Pero la mejora es chica: baja de 5,38 a 5,15 puntos. A partir de acá seguimos solo con el Random
 Forest, y lo comparamos siempre contra el dummy.</p>
-<h3 class="sub">Solo, el modelo no es muy bueno</h3>
-<p>El <b>R²</b> mide qué parte del movimiento de la acción explica el modelo: 1 sería predecir todo perfecto y 0 es lo
-mismo que el dummy. Lo vemos comparando, balance por balance, lo que predijo el Random Forest con lo que pasó.</p>
+<h3 class="sub">Pero explica poco de lo que pasa: el R²</h3>
+<p>El <b>R²</b> mide qué parte del movimiento de la acción explica el modelo: 1 es predecir todo perfecto y 0 es no
+mejorar al dummy. Para medirlo usamos los balances de test (2026Q3), que el modelo no vio nunca, y comparamos uno por
+uno lo que predijo el Random Forest con lo que hizo la acción.</p>
 """)
 R2_RF = r2_score(*PRED.loc[PRED['conjunto'] == 'Test', [m.OBJETIVO, 'prediccion']].T.to_numpy())
 grafico(g.grafico_r2(PRED, R2_RF))
 html(f"""
 <p class="nota"><b>Qué mirar:</b> si el modelo fuera perfecto, los puntos caerían sobre la línea punteada. En cambio
-forman una nube casi horizontal: el modelo predice movimientos chicos y la acción se mueve mucho más. Explica apenas el
-{num(R2_RF * 100, 0)} % de cómo se mueve la acción: la mayor parte de lo que pasa después de un balance no se puede anticipar con estos datos. Si compráramos todas las acciones que el modelo espera que suban (umbral 0 %), ganaríamos en promedio
-{num(CURVAS.query("modelo == @m.ELEGIDO and `umbral (%)` == 0")['retorno'].iloc[0])} % del presupuesto en validación. Para
-ganar más hay que calibrar <b>cuándo</b> comprar.</p>
+forman una franja vertical angosta: el modelo casi nunca predice más de ±5 %, mientras que la acción llega a moverse ±20 %.
+El R² es de {num(R2_RF * 100, 0)} %: la mayor parte de lo que pasa después de un balance no se puede anticipar con estos datos.</p>
+<p>Aun así, el modelo sirve para ordenar: si compráramos todas las acciones que espera que suban (umbral 0 %),
+ganaríamos en promedio {num(CURVAS.query("modelo == @m.ELEGIDO and `umbral (%)` == 0")['retorno'].iloc[0])} % del
+presupuesto en validación. Para ganar más hay que calibrar <b>cuándo</b> comprar.</p>
 
 <h3 class="sub">Después calibramos cuándo comprar: el umbral</h3>
 <p>El modelo no compra cualquier acción que espera que suba: compra solo si espera que suba <b>más que un umbral</b>, y

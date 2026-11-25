@@ -230,9 +230,9 @@ def grafico_r2(pred, r2):
     diagonal = alt.Chart(pd.DataFrame({'v': RET_Y})).mark_line(color='black', strokeDash=[5, 4]).encode(x='v:Q', y='v:Q')
     return (puntos + diagonal).properties(
         width=560, height=420,
-        title=alt.TitleParams(f'El Random Forest explica apenas el {r2:.0%} de cómo se mueve la acción'.replace('%', ' %'),
-                              subtitle=['Cada punto es un balance de test (2026Q3), que el modelo nunca vio al entrenar.',
-                                        'Línea punteada: predicción perfecta. Las predicciones quedan apretadas cerca de 0 mientras la realidad se dispersa.']))
+        title=alt.TitleParams(f'El Random Forest explica apenas el {r2:.0%} del movimiento de la acción'.replace('%', ' %'),
+                              subtitle=['Retorno predicho contra retorno real en cada balance de test (2026Q3).',
+                                        'Línea punteada: predicción perfecta. Los retornos de más de ±20 % se muestran en el borde.']))
 
 
 # ---------- 3d. El modelo: la calibración del umbral ----------
