@@ -86,6 +86,7 @@ depende de muchas otras cosas, y por eso un modelo acierta solo una parte. Aun a
 ganaron dinero.</p>
 <div class="nums">
 <div class="num"><span>63 %</span><p>de las acciones con sorpresa negativa bajan en los 3 días siguientes. Con sorpresa positiva bajan el 42 %.</p></div>
+<div class="num"><span>5,15 pp</span><p>de error absoluto medio (MAE) al predecir el retorno a 3 días, en validación cruzada.</p></div>
 <div class="num"><span>+6,6 %</span><p>ganó la estrategia del modelo sobre el presupuesto en el 1.er semestre de 2026. El dummy perdió 0,4 %.</p></div>
 </div>
 <p class="nota">Medido sobre 11.235 balances trimestrales de 585 empresas, del 25/01/2008 al 30/09/2026
